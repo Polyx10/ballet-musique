@@ -32,6 +32,7 @@
   :root[data-theme="light"] { color-scheme:light; }
   :root[data-theme="dark"] { color-scheme:dark; }
   * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
   body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
   main { max-width:960px; margin:0 auto; padding:16px; display:grid; gap:16px;
          padding-top:16px; padding-bottom:max(16px, env(safe-area-inset-bottom));
@@ -72,6 +73,8 @@
            padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
   .brand img { border-radius:10px; }
   main { padding-top:16px; }
+  button.skip { padding:10px 11px; }
+  select { font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:6px 8px; }
   .note { border-left:3px solid var(--ctl); background:var(--soft); border-radius:0 10px 10px 0; padding:10px 12px; margin:12px 0 0; font-size:14px; }
   .note[hidden] { display:none; }
   .note a { color:var(--accent-text); }
@@ -98,11 +101,21 @@
       <input type="range" id="seek" min="0" max="1000" value="0" data-i18n-aria="position" aria-label="Position">
       <span class="time" id="dur" style="text-align:right">0:00</span>
     </div>
-    <div class="row" style="justify-content:center; gap:16px; margin:14px 0 4px">
+    <div class="row" style="justify-content:center; gap:10px; margin:14px 0 4px">
+      <button id="prev" class="skip" data-i18n-title="prevTrack" data-i18n-aria="prevTrack" title="Morceau précédent" aria-label="Morceau précédent">⏮&#xFE0E;</button>
       <button id="back" data-i18n-title="back" title="Reculer de 5 s">−5 s</button>
       <button id="play" class="primary play" data-i18n-aria="playPause" aria-label="Lecture / pause">▶</button>
       <button id="fwd" data-i18n-title="fwd" title="Avancer de 5 s">+5 s</button>
+      <button id="next" class="skip" data-i18n-title="nextTrack" data-i18n-aria="nextTrack" title="Morceau suivant" aria-label="Morceau suivant">⏭&#xFE0E;</button>
     </div>
+    <div class="row" style="margin-top:12px; justify-content:center">
+      <label class="row" style="gap:8px"><span data-i18n="delay">Départ différé</span>
+        <select id="delay" aria-label="Départ différé">
+          <option value="0" data-i18n="delayNone">Aucun</option><option value="3">3 s</option><option value="5">5 s</option>
+          <option value="10">10 s</option><option value="15">15 s</option><option value="30">30 s</option>
+        </select></label>
+    </div>
+    <div class="hint" id="cd" hidden style="text-align:center; font-size:15px; color:var(--ink)"></div>
     <div class="row" style="margin-top:12px">
       <span class="time" style="min-width:auto" data-i18n="volume">Volume</span>
       <input type="range" id="vol" min="0" max="100" step="1" value="100" data-i18n-aria="volume" aria-label="Volume">
@@ -127,6 +140,11 @@
     <div class="hint" id="loopInfo">Pas de boucle.</div>
     <div class="row" style="margin-top:12px">
       <label><input type="checkbox" id="auto" checked> <span data-i18n="auto">Enchaîner avec le morceau suivant</span></label>
+    </div>
+    <div class="row" id="bgTrimRow" hidden style="margin-top:10px">
+      <span class="time" style="min-width:auto" data-i18n="bgTrim">Volume écran éteint</span>
+      <input type="range" id="bgTrim" min="10" max="100" step="5" value="60" data-i18n-aria="bgTrim" aria-label="Volume écran éteint">
+      <output id="bgTrimOut" class="time" style="min-width:44px;text-align:right">60 %</output>
     </div>
     <div class="note" id="bgNotice" hidden>
       <span data-i18n="bgNotice"></span>
@@ -384,7 +402,8 @@
       }
     }
     // Volume de l'outil (0 à 1), courbe quadratique pour un réglage plus naturel à l'oreille.
-    e.volume = v => { bgVol = v * v; bgAudio.volume = bgVol; volGain = v * v; if (gainNode) gainNode.gain.setTargetAtTime(volGain, ctx.currentTime, 0.02); };
+    e.bgTrim = v => { bgTrim = v; bgAudio.volume = bgLevel(); };
+    e.volume = v => { bgVol = v * v; bgAudio.volume = bgLevel(); volGain = v * v; if (gainNode) gainNode.gain.setTargetAtTime(volGain, ctx.currentTime, 0.02); };
     e.ready = () => {
       e.unlock();
       if (!readyP) readyP = (async () => {
@@ -427,7 +446,8 @@
     // au lecteur audio natif (le même que celui des sites de musique), qui continue normalement en arrière-plan.
     const bgAudio = new Audio();
     bgAudio.preservesPitch = true; bgAudio.webkitPreservesPitch = true; bgAudio.preload = 'auto';
-    let bgUrl = null, bgVol = 1, bgLoopA = null, bgLoopB = null, bgPrepared = null;
+    let bgUrl = null, bgVol = 1, bgTrim = 0.6, bgLoopA = null, bgLoopB = null, bgPrepared = null;
+    const bgLevel = () => bgVol * bgTrim;   // le lecteur natif sort plus fort que le moteur fin sur Android : réglable
     e.bg = false;
     bgAudio.onloadedmetadata = () => { if (e.bg) { e.frames = Math.round(bgAudio.duration * e.sr); e.onpos && e.onpos(); } };
     bgAudio.ontimeupdate = () => {
@@ -443,7 +463,7 @@
       bgUrl = URL.createObjectURL(blob); bgPrepared = blob;
       bgAudio.pause();
       bgAudio.defaultPlaybackRate = bgAudio.playbackRate = tempo / 100;
-      bgAudio.volume = bgVol;
+      bgAudio.volume = bgLevel();
       bgAudio.src = bgUrl;
       bgAudio.load();
     };
@@ -452,7 +472,7 @@
       if (silent) silent.pause();
       if (bgPrepared === blob && bgAudio.readyState >= 1) {          // déjà prêt : départ immédiat
         bgAudio.defaultPlaybackRate = bgAudio.playbackRate = tempo / 100;
-        bgAudio.volume = bgVol;
+        bgAudio.volume = bgLevel();
         e.frames = Math.round(bgAudio.duration * e.sr);
         bgAudio.currentTime = posFrames / e.sr;
         if (playing) bgAudio.play().catch(() => {});
@@ -461,7 +481,7 @@
       if (bgUrl) URL.revokeObjectURL(bgUrl);
       bgUrl = URL.createObjectURL(blob); bgPrepared = blob;
       bgAudio.defaultPlaybackRate = bgAudio.playbackRate = tempo / 100;
-      bgAudio.volume = bgVol;
+      bgAudio.volume = bgLevel();
       bgAudio.src = bgUrl;
       bgAudio.onloadeddata = () => { bgAudio.currentTime = posFrames / e.sr; if (playing) bgAudio.play().catch(() => {}); bgAudio.onloadeddata = null; };
       bgAudio.load();
@@ -490,8 +510,9 @@
   let seeking = false;
   const stretched = frames => frames / engine.sr * 100 / tempoNow;   // secondes réellement écoutées au tempo actuel
 
+  let countdown = null;
   function setPlayUI() {
-    $('play').textContent = engine.playing ? '❚❚' : '▶';
+    $('play').textContent = countdown ? '✕' : (engine.playing ? '❚❚' : '▶');
     wake(engine.playing);
   }
 
@@ -507,20 +528,33 @@
     const i = tracks.findIndex(t => t.id === current.id);
     const next = tracks[i + 1];
     if (!next) return;
-    if (engine.bg) {                        // écran éteint : on enchaîne avec le lecteur natif
-      current = next; clearLoop(); renderList(); showTitle(next);
-      applyTempo(next.tempo, false);
-      engine.bgStart(next.blob, 0, next.tempo, true);
-      setPlayUI();
-    } else load(next, true);
+    goTrack(next, true, true);
   };
+  // Passe à un autre morceau : avec le lecteur natif si l'écran est éteint (Android), sinon avec le moteur fin.
+  function goTrack(t, play, noDelay) {
+    if (engine.bg) {
+      current = t; clearLoop(); renderList(); showTitle(t);
+      applyTempo(t.tempo, false);
+      engine.bgStart(t.blob, 0, t.tempo, play);
+      setPlayUI();
+    } else load(t, play, 0, noDelay);
+  }
+  // précédent : revient au début du morceau s'il est bien entamé, sinon au morceau d'avant
+  function skip(d) {
+    if (!current) return;
+    const i = tracks.findIndex(t => t.id === current.id);
+    if (d < 0 && engine.pos / engine.sr * 100 / tempoNow > 3) { engine.seek(0); return; }
+    const t = tracks[i + d];
+    if (t) goTrack(t, true, true);
+  }
   function showTitle(t) {
     $('title').textContent = t.name;
     if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: t.name, artist: 'The Ballet Pianist' });
   }
 
-  async function load(t, play, startSec) {
+  async function load(t, play, startSec, noDelay) {
     const token = ++loadToken;
+    cancelCountdown();
     engine.unlock();
     current = t;
     engine.pause();
@@ -545,22 +579,55 @@
     refreshTime();
     showTitle(t);
     if (isAndroid()) engine.bgPrepare(t.blob, t.tempo);
-    if (play) { engine.play(); setPlayUI(); }
+    if (play) { noDelay ? beginPlay() : requestPlay(); }
   }
 
   $('seek').oninput = () => { seeking = true; $('cur').textContent = fmt(stretched($('seek').value / 1000 * engine.frames)); };
   $('seek').onchange = () => { engine.seek($('seek').value / 1000 * engine.frames); seeking = false; };
   $('play').onclick = toggle;
   const jump = s => engine.seek(engine.pos + s * engine.sr * tempoNow / 100);
+  $('prev').onclick = () => skip(-1);
+  $('next').onclick = () => skip(1);
   $('back').onclick = () => jump(-5);
   $('fwd').onclick = () => jump(5);
-  function toggle() {
-    engine.unlock();
-    if (!current) { if (tracks[0]) load(tracks[0], true); return; }
-    if (engine.playing) engine.pause();
-    else { if (engine.frames && engine.pos >= engine.frames - engine.sr * 0.2) engine.seek(0); engine.play(); }
+  // Démarre la lecture ; écran éteint sur Android, on démarre directement avec le lecteur natif (pas de coupure).
+  function beginPlay() {
+    if (engine.frames && engine.pos >= engine.frames - engine.sr * 0.2) engine.seek(0);
+    if (document.hidden && isAndroid() && !engine.bg) enterBg(true);
+    else engine.play();
     setPlayUI();
   }
+  // Départ différé : compte à rebours, pratique pour éteindre l'écran et se placer avant que la musique ne commence.
+  function requestPlay() {
+    const d = +$('delay').value;
+    if (d > 0) startCountdown(d); else beginPlay();
+  }
+  function startCountdown(sec) {
+    cancelCountdown();
+    countdown = { end: Date.now() + sec * 1000, t: 0 };
+    $('cd').hidden = false;
+    tickCountdown(); setPlayUI();
+  }
+  function tickCountdown() {
+    if (!countdown) return;
+    const left = Math.ceil((countdown.end - Date.now()) / 1000);
+    if (left <= 0) { cancelCountdown(); beginPlay(); return; }
+    $('cd').textContent = T('startingIn', { n: left });
+    countdown.t = setTimeout(tickCountdown, 200);
+  }
+  function cancelCountdown() {
+    if (!countdown) return;
+    clearTimeout(countdown.t); countdown = null; $('cd').hidden = true; setPlayUI();
+  }
+  function toggle() {
+    engine.unlock();
+    if (countdown) { cancelCountdown(); return; }
+    if (!current) { if (tracks[0]) load(tracks[0], true); return; }
+    if (engine.playing) { engine.pause(); setPlayUI(); }
+    else requestPlay();
+  }
+  try { const d = localStorage.getItem('delay'); if (d && [...$('delay').options].some(o => o.value === d)) $('delay').value = d; } catch (err) {}
+  $('delay').onchange = () => { try { localStorage.setItem('delay', $('delay').value); } catch (err) {} };
 
   /* ---------- Tempo (changement instantané, pendant la lecture) ---------- */
   let saveTimer;
@@ -640,7 +707,7 @@
   async function leaveBg() {
     if (!engine.bg) return;
     const t = current, r = engine.bgStop();
-    await load(t, r.playing, r.sec);         // le moteur fin reprend à la même position
+    await load(t, r.playing, r.sec, true);   // le moteur fin reprend à la même position
   }
   document.addEventListener('visibilitychange', () => {
     engine.setAhead(document.hidden ? 1.5 : 0.3); engine.applyEngine();
@@ -651,13 +718,16 @@
   engine.onlite = lite => { $('lite').textContent = lite ? T('lite') : ''; };
 
   // Commandes de l'écran verrouillé et touches multimédia
+  const msHandlers = {};
   if ('mediaSession' in navigator) {
     const ms = navigator.mediaSession;
-    const act = (name, fn) => { try { ms.setActionHandler(name, fn); } catch (err) {} };
+    const act = (name, fn) => { msHandlers[name] = fn; try { ms.setActionHandler(name, fn); } catch (err) {} };
     act('play', () => { if (!current || engine.playing) return; if (document.hidden && isAndroid() && !engine.bg) enterBg(true); else toggle(); });
     act('pause', () => { if (engine.playing) toggle(); });
-    act('seekbackward', () => jump(-5));
-    act('seekforward', () => jump(5));
+    act('previoustrack', () => skip(-1));
+    act('nexttrack', () => skip(1));
+    // Sur Android, la notification affiche précédent / suivant ; les sauts de 5 s restent aux touches multimédia des ordinateurs.
+    if (!isAndroid()) { act('seekbackward', () => jump(-5)); act('seekforward', () => jump(5)); }
   }
   const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (isIOS) $('folder').closest('label').style.display = 'none';
@@ -667,11 +737,16 @@
   otherHelp();
   const bgLink = () => { const l = document.querySelector('#bgNotice a'); if (l) l.href = 'aide.html#ecran-eteint' + (I18N.lang() === 'en' ? '-en' : ''); };
   bgLink();
+  const bgTrimUI = (v, save) => { $('bgTrim').value = v; $('bgTrimOut').textContent = v + ' %'; engine.bgTrim(v / 100); if (save) { try { localStorage.setItem('bgTrim', String(v)); } catch (err) {} } };
+  let trim = 60; try { const s = parseInt(localStorage.getItem('bgTrim'), 10); if (s >= 10 && s <= 100) trim = s; } catch (err) {}
+  bgTrimUI(trim, false);
+  $('bgTrim').oninput = e => bgTrimUI(+e.target.value, true);
+  if (isAndroid()) $('bgTrimRow').hidden = false;
   $('bgNoticeOk').onclick = () => { $('bgNotice').hidden = true; try { localStorage.setItem('bgNoticeSeen', '1'); } catch (err) {} };
   I18N.onchange = () => { bgLink(); otherHelp(); renderList(); loopInfo(); if (!current) showPick(); $('status').textContent = ''; $('lite').textContent = engine.lite ? T('lite') : ''; };
   $('lang').onclick = () => I18N.toggle();
   if (!current) showPick();
-  window.__test = { importFiles, tracks: () => tracks, engine, load, state: () => ({ tempoNow, current }) };
+  window.__test = { msHandlers, importFiles, tracks: () => tracks, engine, load, state: () => ({ tempoNow, current }) };
   reload();
 })();
 </script>
