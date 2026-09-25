@@ -11,7 +11,7 @@
       shortcuts: 'Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s',
       library: 'Bibliothèque', drop: 'Glisse ici des fichiers ou un dossier de musique',
       addFiles: 'Ajouter des fichiers…', addFolder: 'Ajouter un dossier…', search: 'Rechercher…',
-      selAll: 'Tout sélectionner', help: "Mode d'emploi", switchLang: 'English',
+      selAll: 'Tout sélectionner', help: "Mode d'emploi", helpOther: 'User guide', switchLang: 'English',
       noResult: 'Aucun résultat.', emptyLib: 'Bibliothèque vide. Ajoute de la musique.', remove: 'Retirer',
       confirmOne: "Retirer « {name} » de la bibliothèque ? (le fichier d'origine reste sur ton appareil)",
       delSel0: 'Retirer la sélection', delSelN: 'Retirer la sélection ({n})',
@@ -21,6 +21,7 @@
       added: ['{n} morceau ajouté', '{n} morceaux ajoutés'], skipped: [', {n} déjà présent', ', {n} déjà présents'],
       firefoxPersist: "Si Firefox te demande d'autoriser le stockage permanent, accepte : sinon tes musiques risquent d'être effacées.",
       unreadable: '{name} — format non lisible par le navigateur',
+      bgNotice: "Android : pour que la musique continue écran éteint, autorisez votre navigateur à tourner en arrière-plan (Réglages > Applications > votre navigateur > Batterie > Sans restriction).", learnMore: 'En savoir plus', gotIt: 'Compris',
       themeLabel: 'Thème', themeAuto: 'Auto', themeLight: 'Clair', themeDark: 'Sombre',
       lite: "Mode économique : l'appareil ne suit pas le rythme, le son est un peu moins raffiné.",
       noLoop: 'Pas de boucle.', loopInfo: "Boucle : {a} → {b} (temps du morceau d'origine)", loopEnd: 'fin',
@@ -35,7 +36,7 @@
       shortcuts: 'Shortcuts: space = play/pause · ↑ ↓ = tempo ±1 % · ← → = ±5 s',
       library: 'Library', drop: 'Drop music files or a folder here',
       addFiles: 'Add files…', addFolder: 'Add a folder…', search: 'Search…',
-      selAll: 'Select all', help: 'How to use', switchLang: 'Français',
+      selAll: 'Select all', help: 'How to use', helpOther: "Mode d'emploi", switchLang: 'Français',
       noResult: 'No results.', emptyLib: 'The library is empty. Add some music.', remove: 'Remove',
       confirmOne: 'Remove "{name}" from the library? (your original file stays on your device)',
       delSel0: 'Remove selected', delSelN: 'Remove selected ({n})',
@@ -45,6 +46,7 @@
       added: ['{n} track added', '{n} tracks added'], skipped: [', {n} already there', ', {n} already there'],
       firefoxPersist: 'If Firefox asks you to allow persistent storage, accept: otherwise your music may be erased.',
       unreadable: "{name} — format not readable by this browser",
+      bgNotice: "Android: to keep the music playing with the screen off, allow your browser to run in the background (Settings > Apps > your browser > Battery > Unrestricted).", learnMore: 'Learn more', gotIt: 'Got it',
       themeLabel: 'Theme', themeAuto: 'Auto', themeLight: 'Light', themeDark: 'Dark',
       lite: "Economy mode: your device can't keep up, so the sound is slightly less refined.",
       noLoop: 'No loop.', loopInfo: 'Loop: {a} → {b} (time in the original track)', loopEnd: 'end',
@@ -52,8 +54,10 @@
   };
 
   let lang = 'en';
+  const forced = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
   try { const s = localStorage.getItem('lang'); if (s === 'fr' || s === 'en') lang = s; else lang = /^fr/i.test(navigator.language || '') ? 'fr' : 'en'; }
   catch (e) { lang = /^fr/i.test(navigator.language || '') ? 'fr' : 'en'; }
+  if (forced === 'fr' || forced === 'en') lang = forced;
 
   const I = window.I18N = {
     onchange: null,

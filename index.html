@@ -72,6 +72,9 @@
            padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
   .brand img { border-radius:10px; }
   main { padding-top:16px; }
+  .note { border-left:3px solid var(--ctl); background:var(--soft); border-radius:0 10px 10px 0; padding:10px 12px; margin:12px 0 0; font-size:14px; }
+  .note[hidden] { display:none; }
+  .note a { color:var(--accent-text); }
   .foot { text-align:center; color:var(--muted); font-size:14px; padding:0 16px max(24px, env(safe-area-inset-bottom)); }
   .foot a, .linkbtn { color:var(--accent-text); background:none; border:none; padding:0; font:inherit; text-decoration:underline; cursor:pointer; }
   .seg { display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
@@ -125,6 +128,10 @@
     <div class="row" style="margin-top:12px">
       <label><input type="checkbox" id="auto" checked> <span data-i18n="auto">Enchaîner avec le morceau suivant</span></label>
     </div>
+    <div class="note" id="bgNotice" hidden>
+      <span data-i18n="bgNotice"></span>
+      <div class="row wrap" style="margin-top:8px"><a href="aide.html#ecran-eteint" data-i18n="learnMore"></a><button id="bgNoticeOk" data-i18n="gotIt"></button></div>
+    </div>
     <div class="hint" id="lite"></div>
     <div class="hint" data-i18n="shortcuts">Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s</div>
   </section>
@@ -146,8 +153,9 @@
   </section>
 </main>
 <footer class="foot">
+  <button id="lang" class="linkbtn" data-i18n="switchLang">English</button> ·
   <a href="aide.html" data-i18n="help">Mode d'emploi</a> ·
-  <button id="lang" class="linkbtn" data-i18n="switchLang">English</button>
+  <a id="helpOther" href="aide.html?lang=en" data-i18n="helpOther" hreflang="en">User guide</a>
   <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
     <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
   </div></div>
@@ -419,7 +427,7 @@
     // au lecteur audio natif (le même que celui des sites de musique), qui continue normalement en arrière-plan.
     const bgAudio = new Audio();
     bgAudio.preservesPitch = true; bgAudio.webkitPreservesPitch = true; bgAudio.preload = 'auto';
-    let bgUrl = null, bgVol = 1, bgLoopA = null, bgLoopB = null;
+    let bgUrl = null, bgVol = 1, bgLoopA = null, bgLoopB = null, bgPrepared = null;
     e.bg = false;
     bgAudio.onloadedmetadata = () => { if (e.bg) { e.frames = Math.round(bgAudio.duration * e.sr); e.onpos && e.onpos(); } };
     bgAudio.ontimeupdate = () => {
@@ -428,11 +436,30 @@
       e.pos = bgAudio.currentTime * e.sr; e.onpos && e.onpos();
     };
     bgAudio.onended = () => { if (e.bg) { e.playing = false; e.pos = e.frames; e.onended && e.onended(); } };
-    e.bgStart = (blob, posFrames, tempo, playing) => {
+    // Chargé à l'avance pendant que l'écran est allumé : au moment de l'extinction, il n'y a plus qu'à lancer la lecture.
+    e.bgPrepare = (blob, tempo) => {
+      if (bgPrepared === blob) return;
       if (bgUrl) URL.revokeObjectURL(bgUrl);
-      bgUrl = URL.createObjectURL(blob);
+      bgUrl = URL.createObjectURL(blob); bgPrepared = blob;
+      bgAudio.pause();
+      bgAudio.defaultPlaybackRate = bgAudio.playbackRate = tempo / 100;
+      bgAudio.volume = bgVol;
+      bgAudio.src = bgUrl;
+      bgAudio.load();
+    };
+    e.bgStart = (blob, posFrames, tempo, playing) => {
       e.bg = true; e.playing = playing;
       if (silent) silent.pause();
+      if (bgPrepared === blob && bgAudio.readyState >= 1) {          // déjà prêt : départ immédiat
+        bgAudio.defaultPlaybackRate = bgAudio.playbackRate = tempo / 100;
+        bgAudio.volume = bgVol;
+        e.frames = Math.round(bgAudio.duration * e.sr);
+        bgAudio.currentTime = posFrames / e.sr;
+        if (playing) bgAudio.play().catch(() => {});
+        return;
+      }
+      if (bgUrl) URL.revokeObjectURL(bgUrl);
+      bgUrl = URL.createObjectURL(blob); bgPrepared = blob;
       bgAudio.defaultPlaybackRate = bgAudio.playbackRate = tempo / 100;
       bgAudio.volume = bgVol;
       bgAudio.src = bgUrl;
@@ -517,6 +544,7 @@
     if (startSec) engine.seek(startSec * engine.sr);
     refreshTime();
     showTitle(t);
+    if (isAndroid()) engine.bgPrepare(t.blob, t.tempo);
     if (play) { engine.play(); setPlayUI(); }
   }
 
@@ -633,7 +661,14 @@
   }
   const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (isIOS) $('folder').closest('label').style.display = 'none';
-  I18N.onchange = () => { renderList(); loopInfo(); if (!current) showPick(); $('status').textContent = ''; $('lite').textContent = engine.lite ? T('lite') : ''; };
+  // Android : prévenir (une fois) qu'il faut autoriser le navigateur à tourner en arrière-plan
+  try { if (isAndroid() && !localStorage.getItem('bgNoticeSeen')) $('bgNotice').hidden = false; } catch (err) {}
+  const otherHelp = () => { $('helpOther').href = 'aide.html?lang=' + (I18N.lang() === 'en' ? 'fr' : 'en'); $('helpOther').hreflang = I18N.lang() === 'en' ? 'fr' : 'en'; };
+  otherHelp();
+  const bgLink = () => { const l = document.querySelector('#bgNotice a'); if (l) l.href = 'aide.html#ecran-eteint' + (I18N.lang() === 'en' ? '-en' : ''); };
+  bgLink();
+  $('bgNoticeOk').onclick = () => { $('bgNotice').hidden = true; try { localStorage.setItem('bgNoticeSeen', '1'); } catch (err) {} };
+  I18N.onchange = () => { bgLink(); otherHelp(); renderList(); loopInfo(); if (!current) showPick(); $('status').textContent = ''; $('lite').textContent = engine.lite ? T('lite') : ''; };
   $('lang').onclick = () => I18N.toggle();
   if (!current) showPick();
   window.__test = { importFiles, tracks: () => tracks, engine, load, state: () => ({ tempoNow, current }) };
