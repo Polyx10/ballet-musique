@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#8a2c3f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Musique">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Musique de classe</title>
+<style>
+  :root {
+    --bg:#f6f4f1; --card:#fff; --ink:#22201e; --muted:#7a746e; --line:#e4dfd9;
+    --accent:#8a2c3f; --accent-ink:#fff; --soft:#f0e4e7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161413; --card:#211f1d; --ink:#f0ece7; --muted:#9a938b; --line:#34302c; --accent:#d4677d; --accent-ink:#1a0a0e; --soft:#3a2229; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
+  main { max-width:960px; margin:0 auto; padding:16px; display:grid; gap:16px;
+         padding-top:max(16px, env(safe-area-inset-top)); padding-bottom:max(16px, env(safe-area-inset-bottom));
+         padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
+  @media (min-width:800px){ main{ grid-template-columns: 1fr 1fr; align-items:start; } }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
+  h1 { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; font-weight:600; }
+  button, label, input { touch-action:manipulation; }
+  body { -webkit-tap-highlight-color:transparent; }
+  button { font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; }
+  button:active { transform:scale(.97); }
+  button.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .title { font-size:22px; font-weight:600; min-height:1.4em; margin-bottom:12px; overflow-wrap:anywhere; }
+  .row { display:flex; align-items:center; gap:10px; }
+  .row.wrap { flex-wrap:wrap; }
+  .time { font-variant-numeric:tabular-nums; color:var(--muted); font-size:14px; min-width:44px; }
+  input[type=range] { width:100%; accent-color:var(--accent); }
+  .play { width:72px; height:72px; border-radius:50%; font-size:28px; padding:0; }
+  .tempo { text-align:center; margin:18px 0 6px; }
+  .tempo output { font-size:56px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .tempo small { font-size:20px; color:var(--muted); }
+  .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }
+  .steps button { font-size:18px; padding:14px 0; }
+  .loop button.on { background:var(--soft); border-color:var(--accent); }
+  .hint { color:var(--muted); font-size:13px; margin-top:10px; }
+  #drop { border:2px dashed var(--line); border-radius:12px; padding:16px; text-align:center; color:var(--muted); margin-bottom:12px; }
+  #drop.over { border-color:var(--accent); background:var(--soft); }
+  #search { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:var(--bg); color:var(--ink); font:inherit; margin-bottom:8px; }
+  ul { list-style:none; margin:0; padding:0; max-height:52vh; overflow:auto; }
+  li { display:flex; align-items:center; gap:8px; padding:10px 8px; border-bottom:1px solid var(--line); cursor:pointer; border-radius:8px; }
+  li.cur { background:var(--soft); }
+  li .n { flex:1; overflow-wrap:anywhere; }
+  li .t { font-size:12px; color:var(--muted); white-space:nowrap; }
+  li .x { padding:4px 8px; font-size:13px; color:var(--muted); background:none; border:none; }
+  .empty { color:var(--muted); padding:12px 0; text-align:center; }
+  label.file { display:inline-block; }
+  label.file input { display:none; }
+  label.file span { display:inline-block; font:inherit; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; }
+</style>
+</head>
+<body>
+<main>
+  <section id="player">
+    <h1>Lecture</h1>
+    <div class="title" id="title">Choisis un morceau</div>
+    <div class="row">
+      <span class="time" id="cur">0:00</span>
+      <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position">
+      <span class="time" id="dur" style="text-align:right">0:00</span>
+    </div>
+    <div class="row" style="justify-content:center; gap:16px; margin:14px 0 4px">
+      <button id="back" title="Reculer de 5 s">−5 s</button>
+      <button id="play" class="primary play" aria-label="Lecture / pause">▶</button>
+      <button id="fwd" title="Avancer de 5 s">+5 s</button>
+    </div>
+
+    <div class="tempo"><output id="tempoOut">100</output><small> %</small></div>
+    <input type="range" id="tempo" min="40" max="160" step="1" value="100" aria-label="Tempo">
+    <div class="steps">
+      <button data-d="-5">−5</button><button data-d="-1">−1</button>
+      <button data-d="1">+1</button><button data-d="5">+5</button>
+    </div>
+    <div class="row wrap" style="margin-top:10px">
+      <button id="reset">Tempo d'origine (100 %)</button>
+    </div>
+
+    <div class="row wrap loop" style="margin-top:14px">
+      <button id="setA">Départ de boucle</button>
+      <button id="setB">Fin de boucle</button>
+      <button id="clearLoop">Effacer</button>
+    </div>
+    <div class="hint" id="loopInfo">Pas de boucle.</div>
+    <div class="row" style="margin-top:12px">
+      <label><input type="checkbox" id="auto" checked> Enchaîner avec le morceau suivant</label>
+    </div>
+    <div class="hint">Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s</div>
+  </section>
+
+  <section id="lib">
+    <h1>Bibliothèque</h1>
+    <div id="drop">Glisse ici des fichiers ou un dossier de musique</div>
+    <div class="row wrap" style="margin-bottom:10px">
+      <label class="file"><span>Ajouter des fichiers…</span><input type="file" id="files" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.aif,.aiff" multiple></label>
+      <label class="file"><span>Ajouter un dossier…</span><input type="file" id="folder" webkitdirectory multiple></label>
+    </div>
+    <input id="search" type="search" placeholder="Rechercher…">
+    <div class="row wrap" id="bulk" style="margin-bottom:8px">
+      <label><input type="checkbox" id="selAll"> Tout sélectionner</label>
+      <button id="delSel" disabled>Retirer la sélection</button>
+    </div>
+    <ul id="list"></ul>
+    <div class="hint" id="status"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const AUDIO_EXT = /\.(mp3|m4a|aac|wav|flac|aif|aiff|ogg|opus)$/i;
+
+  /* ---------- Stockage (IndexedDB) ---------- */
+  const dbp = new Promise((res, rej) => {
+    const r = indexedDB.open('musique-classe', 2);
+    r.onupgradeneeded = () => {
+      const db = r.result;
+      if (!db.objectStoreNames.contains('tracks')) db.createObjectStore('tracks', { keyPath: 'id', autoIncrement: true });
+      if (!db.objectStoreNames.contains('renders')) db.createObjectStore('renders', { keyPath: 'id' });
+    };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+  const tx = async (mode, fn, store = 'tracks') => {
+    const db = await dbp;
+    return new Promise((res, rej) => {
+      const t = db.transaction(store, mode);
+      const out = fn(t.objectStore(store));
+      t.oncomplete = () => res(out && out.result);
+      t.onerror = () => rej(t.error);
+    });
+  };
+  const dbAll = () => tx('readonly', s => s.getAll());
+  const dbAdd = rec => tx('readwrite', s => s.add(rec));
+  const dbPut = rec => tx('readwrite', s => s.put(rec));
+  const dbDel = id => tx('readwrite', s => s.delete(id));
+  tx('readwrite', s => s.clear(), 'renders').catch(() => {});   // anciennes versions calculées : plus utilisées
+
+  /* ---------- État ---------- */
+  let tracks = [];
+  const selected = new Set();
+  let current = null;
+  let loopA = null, loopB = null;   // en images (frames) du morceau d'origine
+
+  const fmt = s => {
+    if (!isFinite(s)) return '0:00';
+    s = Math.max(0, Math.round(s));
+    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  };
+  const cleanName = n => n.replace(/\.[^.]+$/, '');
+  const MIME = { mp3:'audio/mpeg', m4a:'audio/mp4', aac:'audio/aac', wav:'audio/wav', flac:'audio/flac', aif:'audio/aiff', aiff:'audio/aiff', ogg:'audio/ogg', opus:'audio/ogg' };
+  const mimeOf = (name, type) => (type && type.startsWith('audio/') && type !== 'audio/x-m4a' ? type : MIME[(name.match(/\.([^.]+)$/) || [])[1]?.toLowerCase()] || 'audio/mpeg');
+
+  /* ---------- Bibliothèque ---------- */
+  function renderList() {
+    const q = $('search').value.trim().toLowerCase();
+    const ul = $('list');
+    ul.innerHTML = '';
+    const shown = tracks.filter(t => t.name.toLowerCase().includes(q));
+    if (!shown.length) {
+      const d = document.createElement('div');
+      d.className = 'empty';
+      d.textContent = tracks.length ? 'Aucun résultat.' : 'Bibliothèque vide. Ajoute de la musique.';
+      ul.appendChild(d);
+      updateBulk(shown);
+      return;
+    }
+    for (const t of shown) {
+      const li = document.createElement('li');
+      if (current && current.id === t.id) li.className = 'cur';
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = selected.has(t.id);
+      cb.onclick = e => e.stopPropagation();
+      cb.onchange = () => { cb.checked ? selected.add(t.id) : selected.delete(t.id); updateBulk(shown); };
+      const n = document.createElement('span'); n.className = 'n'; n.textContent = t.name;
+      const tp = document.createElement('span'); tp.className = 't';
+      tp.textContent = t.tempo !== 100 ? t.tempo + ' %' : '';
+      const x = document.createElement('button'); x.className = 'x'; x.textContent = 'Retirer';
+      x.onclick = async e => {
+        e.stopPropagation();
+        if (!confirm('Retirer « ' + t.name + ' » de la bibliothèque ? (le fichier d\'origine reste sur ton Mac)')) return;
+        if (current && current.id === t.id) { engine.pause(); current = null; $('title').textContent = 'Choisis un morceau'; }
+        await dbDel(t.id);
+        await reload();
+      };
+      li.append(cb, n, tp, x);
+      li.onclick = () => load(t, true);
+      ul.appendChild(li);
+    }
+    updateBulk(shown);
+  }
+
+  function updateBulk(shown) {
+    for (const id of [...selected]) if (!tracks.some(t => t.id === id)) selected.delete(id);
+    const n = selected.size;
+    $('delSel').disabled = n === 0;
+    $('delSel').textContent = n ? `Retirer la sélection (${n})` : 'Retirer la sélection';
+    const all = shown.length > 0 && shown.every(t => selected.has(t.id));
+    $('selAll').checked = all;
+    $('selAll').indeterminate = !all && shown.some(t => selected.has(t.id));
+  }
+
+  $('selAll').onchange = e => {
+    const q = $('search').value.trim().toLowerCase();
+    for (const t of tracks.filter(t => t.name.toLowerCase().includes(q))) e.target.checked ? selected.add(t.id) : selected.delete(t.id);
+    renderList();
+  };
+  $('delSel').onclick = async () => {
+    const n = selected.size;
+    if (!n || !confirm(`Retirer ${n} morceau(x) de la bibliothèque ? (les fichiers d'origine restent sur ton Mac)`)) return;
+    if (current && selected.has(current.id)) { engine.pause(); current = null; $('title').textContent = 'Choisis un morceau'; }
+    for (const id of selected) await dbDel(id);
+    selected.clear();
+    await reload();
+    $('status').textContent = `${n} morceau(x) retiré(s).`;
+  };
+
+  async function reload() {
+    tracks = (await dbAll()).sort((a, b) => a.name.localeCompare(b.name, 'fr', { numeric: true }));
+    if (current) { const old = current; current = tracks.find(t => t.id === old.id) || old; if (current !== old) current.tempo = old.tempo; }
+    renderList();
+  }
+
+  async function importFiles(fileList) {
+    const files = [...fileList].filter(f => f.type.startsWith('audio/') || AUDIO_EXT.test(f.name));
+    if (!files.length) { $('status').textContent = 'Aucun fichier audio reconnu.'; return; }
+    const known = new Set(tracks.map(t => t.name + '|' + t.size));
+    let added = 0, skipped = 0;
+    for (const f of files) {
+      const name = cleanName(f.name);
+      if (known.has(name + '|' + f.size)) { skipped++; continue; }
+      try {
+        await dbAdd({ name, size: f.size, type: mimeOf(f.name, f.type), blob: f, tempo: 100, added: Date.now() });
+        added++;
+        $('status').textContent = `Import… ${added} / ${files.length}`;
+      } catch (e) {
+        $('status').textContent = 'Erreur d\'import : ' + (e.name || e);
+        break;
+      }
+    }
+    await reload();
+    $('status').textContent = `${added} morceau(x) ajouté(s)` + (skipped ? `, ${skipped} déjà présent(s)` : '') + '.';
+  }
+
+  $('files').onchange = e => { importFiles(e.target.files); e.target.value = ''; };
+  $('folder').onchange = e => { importFiles(e.target.files); e.target.value = ''; };
+  $('search').oninput = renderList;
+
+  const drop = $('drop');
+  ['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  document.addEventListener('drop', async e => {
+    const items = [...(e.dataTransfer.items || [])].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+    if (!items.length) { importFiles(e.dataTransfer.files); return; }
+    const out = [];
+    const walk = async entry => {
+      if (entry.isFile) out.push(await new Promise(r => entry.file(r)));
+      else if (entry.isDirectory) {
+        const rd = entry.createReader();
+        let batch;
+        do {
+          batch = await new Promise(r => rd.readEntries(r));
+          for (const c of batch) await walk(c);
+        } while (batch.length);
+      }
+    };
+    for (const it of items) await walk(it);
+    importFiles(out);
+  });
+
+  /* ---------- Moteur de lecture (temps réel) ---------- */
+  const engine = (() => {
+    let ctx = null, node = null, readyP = null, loadRes = null;
+    const e = { sr: 44100, frames: 0, pos: 0, playing: false, onpos: null, onended: null };
+    const onMsg = ev => {
+      const m = ev.data;
+      if (m.type === 'pos') { e.pos = m.frame; e.under = m.under; e.onpos && e.onpos(); }
+      else if (m.type === 'ended') { e.playing = false; e.pos = e.frames; e.onended && e.onended(); }
+    };
+    // À appeler directement dans un clic : Safari n'autorise le son qu'à ce moment-là.
+    // Sur iPhone, l'interrupteur « silence » coupe le Web Audio. On demande la catégorie « lecture »,
+    // ou à défaut on fait tourner un son silencieux qui produit le même effet.
+    let silent = null;
+    const playbackSession = () => {
+      try { if (navigator.audioSession) { navigator.audioSession.type = 'playback'; return; } } catch (err) {}
+      if (silent) return;
+      // 1 seconde de silence (WAV mono 8 kHz, 16 bits) fabriquée à la volée
+      const n = 8000, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+      const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+      str(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); str(8, 'WAVE'); str(12, 'fmt ');
+      v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, 8000, true); v.setUint32(28, 16000, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+      str(36, 'data'); v.setUint32(40, n * 2, true);
+      silent = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })));
+      silent.loop = true;
+      silent.play().catch(() => { silent = null; });
+    };
+    e.unlock = () => {
+      playbackSession();
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state !== 'running') ctx.resume().catch(() => {});
+    };
+    let dsp = null, gen = 0;
+    e.ready = () => {
+      e.unlock();
+      if (!readyP) readyP = (async () => {
+        await ctx.audioWorklet.addModule('stretch-processor.js');
+        node = new AudioWorkletNode(ctx, 'stretcher', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2] });
+        node.connect(ctx.destination);
+        node.port.onmessage = onMsg;
+        // Le calcul de l'étirement se fait dans un Worker, relié directement au lecteur par un canal privé.
+        dsp = new Worker('dsp-worker.js');
+        const link = new MessageChannel();
+        node.port.postMessage({ type: 'link', port: link.port1 }, [link.port1]);
+        const bytes = await (await fetch('vendor/rubberband.wasm')).arrayBuffer();
+        await new Promise((res, rej) => {
+          dsp.onmessage = ev => {
+            const m = ev.data;
+            if (m.type === 'ready') res();
+            else if (m.type === 'loaded') { e.frames = m.frames; e.sr = m.sampleRate; e.pos = 0; loadRes && loadRes(m); loadRes = null; }
+          };
+          dsp.onerror = err => rej(new Error(err.message || 'worker'));
+          dsp.postMessage({ type: 'init', bytes, port: link.port2 }, [link.port2]);
+        });
+      })();
+      return readyP;
+    };
+    e.decode = async buf => {
+      e.unlock();
+      const ab = await ctx.decodeAudioData(buf);
+      return Array.from({ length: ab.numberOfChannels }, (_, c) => ab.getChannelData(c).slice());
+    };
+    e.load = channels => new Promise(res => {
+      loadRes = res; e.playing = false; gen++;
+      node.port.postMessage({ type: 'clear', gen });
+      dsp.postMessage({ type: 'load', channels, sampleRate: ctx.sampleRate, gen }, channels.map(c => c.buffer));
+    });
+    e.play = () => { if (!node) return; e.playing = true; node.port.postMessage({ type: 'play' }); if (ctx.state !== 'running') ctx.resume().catch(() => {}); };
+    e.pause = () => { if (!node) return; e.playing = false; node.port.postMessage({ type: 'pause' }); };
+    e.seek = frame => {
+      if (!node) return;
+      e.pos = Math.max(0, Math.min(e.frames, frame)); gen++;
+      node.port.postMessage({ type: 'clear', gen });
+      dsp.postMessage({ type: 'seek', frame: e.pos, gen });
+      e.onpos && e.onpos();
+    };
+    e.tempo = v => dsp && dsp.postMessage({ type: 'tempo', tempo: v });
+    e.loop = (a, b) => dsp && dsp.postMessage({ type: 'loop', a, b });
+    e.debug = () => ({ ctx, node });
+    return e;
+  })();
+
+  /* ---------- Lecture ---------- */
+  let loadToken = 0;
+  let tempoNow = 100;
+  let seeking = false;
+  const stretched = frames => frames / engine.sr * 100 / tempoNow;   // secondes réellement écoutées au tempo actuel
+
+  function setPlayUI() {
+    $('play').textContent = engine.playing ? '❚❚' : '▶';
+    wake(engine.playing);
+  }
+
+  function refreshTime() {
+    $('cur').textContent = fmt(stretched(engine.pos));
+    $('dur').textContent = fmt(stretched(engine.frames));
+    if (engine.frames && !seeking) $('seek').value = engine.pos / engine.frames * 1000;
+  }
+  engine.onpos = refreshTime;
+  engine.onended = () => {
+    setPlayUI();
+    if (!$('auto').checked || !current) return;
+    const i = tracks.findIndex(t => t.id === current.id);
+    if (tracks[i + 1]) load(tracks[i + 1], true);
+  };
+
+  async function load(t, play) {
+    const token = ++loadToken;
+    engine.unlock();
+    current = t;
+    engine.pause();
+    setPlayUI();
+    $('title').textContent = t.name;
+    $('seek').value = 0; $('cur').textContent = '0:00'; $('dur').textContent = '0:00';
+    clearLoop();
+    renderList();
+    try {
+      const raw = await t.blob.arrayBuffer();
+      const channels = await engine.decode(raw);
+      await engine.ready();
+      if (token !== loadToken) return;
+      await engine.load(channels);
+      if (token !== loadToken) return;
+    } catch (err) {
+      $('title').textContent = t.name + ' — format non lisible par le navigateur';
+      return;
+    }
+    applyTempo(t.tempo, false);
+    refreshTime();
+    if (play) { engine.play(); setPlayUI(); }
+  }
+
+  $('seek').oninput = () => { seeking = true; $('cur').textContent = fmt(stretched($('seek').value / 1000 * engine.frames)); };
+  $('seek').onchange = () => { engine.seek($('seek').value / 1000 * engine.frames); seeking = false; };
+  $('play').onclick = toggle;
+  const jump = s => engine.seek(engine.pos + s * engine.sr * tempoNow / 100);
+  $('back').onclick = () => jump(-5);
+  $('fwd').onclick = () => jump(5);
+  function toggle() {
+    engine.unlock();
+    if (!current) { if (tracks[0]) load(tracks[0], true); return; }
+    if (engine.playing) engine.pause();
+    else { if (engine.frames && engine.pos >= engine.frames - engine.sr * 0.2) engine.seek(0); engine.play(); }
+    setPlayUI();
+  }
+
+  /* ---------- Tempo (changement instantané, pendant la lecture) ---------- */
+  let saveTimer;
+  function applyTempo(v, persist = true) {
+    v = Math.min(160, Math.max(40, Math.round(v)));
+    tempoNow = v;
+    $('tempo').value = v;
+    $('tempoOut').textContent = v;
+    engine.tempo(v);
+    refreshTime();
+    if (current && persist) {
+      current.tempo = v;
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => { await dbPut(current); renderList(); }, 400);
+    }
+  }
+  $('tempo').oninput = e => applyTempo(+e.target.value);
+  $('reset').onclick = () => applyTempo(100);
+  document.querySelectorAll('.steps button').forEach(b => b.onclick = () => applyTempo((+$('tempo').value) + (+b.dataset.d)));
+
+  /* ---------- Boucle ---------- */
+  function loopInfo() {
+    const f = x => fmt(x / engine.sr);
+    $('loopInfo').textContent = loopA === null && loopB === null ? 'Pas de boucle.'
+      : `Boucle : ${loopA === null ? '—' : f(loopA)} → ${loopB === null ? 'fin' : f(loopB)} (temps du morceau d'origine)`;
+    $('setA').classList.toggle('on', loopA !== null);
+    $('setB').classList.toggle('on', loopB !== null);
+  }
+  function sendLoop() { engine.loop(loopA !== null && loopB !== null ? loopA : null, loopA !== null && loopB !== null ? loopB : null); }
+  function clearLoop() { loopA = loopB = null; loopInfo(); sendLoop(); }
+  $('setA').onclick = () => { loopA = Math.round(engine.pos); if (loopB !== null && loopB <= loopA) loopB = null; loopInfo(); sendLoop(); };
+  $('setB').onclick = () => { if (loopA === null) loopA = 0; loopB = Math.round(engine.pos); if (loopB <= loopA) { loopB = null; } loopInfo(); sendLoop(); };
+  $('clearLoop').onclick = clearLoop;
+
+  /* ---------- Écran maintenu allumé ---------- */
+  let lock = null;
+  async function wake(on) {
+    try {
+      if (on && 'wakeLock' in navigator) lock = await navigator.wakeLock.request('screen');
+      else if (lock) { await lock.release(); lock = null; }
+    } catch (e) {}
+  }
+
+  /* ---------- Clavier ---------- */
+  document.addEventListener('keydown', e => {
+    if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName) && e.target.type !== 'range' && e.target.type !== 'checkbox') return;
+    if (e.code === 'Space') { e.preventDefault(); toggle(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); applyTempo((+$('tempo').value) + 1); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); applyTempo((+$('tempo').value) - 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); $('back').click(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); $('fwd').click(); }
+  });
+
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  window.__test = { importFiles, tracks: () => tracks, engine, load, state: () => ({ tempoNow, current }) };
+  reload();
+})();
+</script>
+</body>
+</html>
