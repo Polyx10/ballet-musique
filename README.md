@@ -1,4 +1,4 @@
-# Musique de classe
+# The Ballet Pianist
 
 Lecteur de musique pour cours de danse : le tempo se règle en direct (40 à 160 %) sans changer la hauteur du son.
 

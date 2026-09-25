@@ -7,12 +7,12 @@ const RT = 0x00000001;           // temps réel
 const ENGINE_FINER = 0x20000000; // moteur « très haute qualité »
 const FEED = 512;                // images source injectées à chaque tour
 const CHUNK = 1024;              // images produites par paquet
-const AHEAD_SEC = 0.3;           // avance visée sur le son joué
+let AHEAD_SEC = 0.3;             // avance visée sur le son joué (plus grande écran éteint)
 
 let api = null, port = null, st = 0, arr = 0, ptrs = [], scratch = [];
 let pcm = null, len = 0, pos = 0, sr = 48000, gen = 0;
 let ratio = 1, loopA = null, loopB = null, latency = 0;
-let sent = 0, acked = 0, silenceFed = 0, finished = false, pumping = false;
+let sent = 0, acked = 0, silenceFed = 0, finished = false, pumping = false, timer = 0;
 
 function freeState() {
   if (!st) return;
@@ -69,7 +69,8 @@ function pump() {
     let budget = 8;   // on rend la main régulièrement pour traiter les messages
     while (!finished && sent - acked < target && budget-- > 0) makeChunk();
   } finally { pumping = false; }
-  if (!finished) setTimeout(pump, sent - acked < AHEAD_SEC * sr ? 0 : 8);
+  clearTimeout(timer);
+  if (!finished) timer = setTimeout(pump, sent - acked < AHEAD_SEC * sr ? 0 : 8);
 }
 
 onmessage = async e => {
@@ -77,7 +78,9 @@ onmessage = async e => {
   switch (m.type) {
     case 'init': {
       port = m.port;
-      port.onmessage = ev => { if (ev.data.gen === gen) { acked += ev.data.ack; } };
+      // Chaque paquet joué par le lecteur réveille le calcul : les minuteurs sont ralentis quand la page est
+      // en arrière-plan (écran éteint sur Android), les messages du lecteur non.
+      port.onmessage = ev => { if (ev.data.gen === gen) { acked += ev.data.ack; pump(); } };
       const wasm = await WebAssembly.compile(m.bytes);
       api = await rubberband.RubberBandInterface.initialize(wasm);
       postMessage({ type: 'ready' });
@@ -97,6 +100,7 @@ onmessage = async e => {
       api.rubberband_reset(st);
       pump();
       break;
+    case 'ahead': AHEAD_SEC = m.sec; pump(); break;
     case 'tempo':
       ratio = 100 / m.tempo;
       if (st) api.rubberband_set_time_ratio(st, ratio);

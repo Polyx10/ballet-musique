@@ -1,6 +1,6 @@
 /* Permet d'ouvrir l'outil sans connexion (salle de cours sans wifi). Les musiques sont déjà dans le navigateur. */
-const CACHE = 'musique-classe-v2';
-const FILES = ['./', 'index.html', 'stretch-processor.js', 'dsp-worker.js', 'vendor/rubberband.umd.min.js', 'vendor/rubberband.wasm', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
+const CACHE = 'musique-classe-v4';
+const FILES = ['./', 'index.html', 'aide.html', 'i18n.js', 'stretch-processor.js', 'dsp-worker.js', 'vendor/rubberband.umd.min.js', 'vendor/rubberband.wasm', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {

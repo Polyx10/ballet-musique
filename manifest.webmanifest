@@ -1,6 +1,6 @@
 {
-  "name": "Musique de classe",
-  "short_name": "Musique",
+  "name": "The Ballet Pianist",
+  "short_name": "Ballet Pianist",
   "description": "Lecteur de musique de cours de danse avec tempo réglable en direct.",
   "lang": "fr",
   "start_url": "./",

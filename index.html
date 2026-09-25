@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-title-key="appTitle">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#8a2c3f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Musique">
+<meta name="apple-mobile-web-app-title" content="Ballet Pianist">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>Musique de classe</title>
+<title>The Ballet Pianist</title>
 <style>
   :root {
     --bg:#f6f4f1; --card:#fff; --ink:#22201e; --muted:#7a746e; --line:#e4dfd9;
@@ -23,7 +23,7 @@
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
   main { max-width:960px; margin:0 auto; padding:16px; display:grid; gap:16px;
-         padding-top:max(16px, env(safe-area-inset-top)); padding-bottom:max(16px, env(safe-area-inset-bottom));
+         padding-top:16px; padding-bottom:max(16px, env(safe-area-inset-bottom));
          padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
   @media (min-width:800px){ main{ grid-template-columns: 1fr 1fr; align-items:start; } }
   section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
@@ -56,73 +56,85 @@
   li .t { font-size:12px; color:var(--muted); white-space:nowrap; }
   li .x { padding:4px 8px; font-size:13px; color:var(--muted); background:none; border:none; }
   .empty { color:var(--muted); padding:12px 0; text-align:center; }
+  .brand { text-align:center; font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em; color:var(--accent);
+           padding:max(18px, env(safe-area-inset-top)) 16px 0; }
+  .foot { text-align:center; color:var(--muted); font-size:14px; padding:0 16px max(24px, env(safe-area-inset-bottom)); }
+  .foot a, .linkbtn { color:var(--accent); background:none; border:none; padding:0; font:inherit; text-decoration:underline; cursor:pointer; }
   label.file { display:inline-block; }
   label.file input { display:none; }
   label.file span { display:inline-block; font:inherit; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; }
 </style>
 </head>
 <body>
+<header class="brand">The Ballet Pianist</header>
 <main>
   <section id="player">
-    <h1>Lecture</h1>
+    <h1 data-i18n="player">Lecture</h1>
     <div class="title" id="title">Choisis un morceau</div>
     <div class="row">
       <span class="time" id="cur">0:00</span>
-      <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position">
+      <input type="range" id="seek" min="0" max="1000" value="0" data-i18n-aria="position" aria-label="Position">
       <span class="time" id="dur" style="text-align:right">0:00</span>
     </div>
     <div class="row" style="justify-content:center; gap:16px; margin:14px 0 4px">
-      <button id="back" title="Reculer de 5 s">−5 s</button>
-      <button id="play" class="primary play" aria-label="Lecture / pause">▶</button>
-      <button id="fwd" title="Avancer de 5 s">+5 s</button>
+      <button id="back" data-i18n-title="back" title="Reculer de 5 s">−5 s</button>
+      <button id="play" class="primary play" data-i18n-aria="playPause" aria-label="Lecture / pause">▶</button>
+      <button id="fwd" data-i18n-title="fwd" title="Avancer de 5 s">+5 s</button>
     </div>
     <div class="row" style="margin-top:12px">
-      <span class="time" style="min-width:auto">Volume</span>
-      <input type="range" id="vol" min="0" max="100" step="1" value="100" aria-label="Volume">
+      <span class="time" style="min-width:auto" data-i18n="volume">Volume</span>
+      <input type="range" id="vol" min="0" max="100" step="1" value="100" data-i18n-aria="volume" aria-label="Volume">
       <output id="volOut" class="time" style="min-width:44px;text-align:right">100 %</output>
     </div>
 
     <div class="tempo"><output id="tempoOut">100</output><small> %</small></div>
-    <input type="range" id="tempo" min="40" max="160" step="1" value="100" aria-label="Tempo">
+    <input type="range" id="tempo" min="40" max="160" step="1" value="100" data-i18n-aria="tempo" aria-label="Tempo">
     <div class="steps">
       <button data-d="-5">−5</button><button data-d="-1">−1</button>
       <button data-d="1">+1</button><button data-d="5">+5</button>
     </div>
     <div class="row wrap" style="margin-top:10px">
-      <button id="reset">Tempo d'origine (100 %)</button>
+      <button id="reset" data-i18n="reset">Tempo d'origine (100 %)</button>
     </div>
 
     <div class="row wrap loop" style="margin-top:14px">
-      <button id="setA">Départ de boucle</button>
-      <button id="setB">Fin de boucle</button>
-      <button id="clearLoop">Effacer</button>
+      <button id="setA" data-i18n="setA">Départ de boucle</button>
+      <button id="setB" data-i18n="setB">Fin de boucle</button>
+      <button id="clearLoop" data-i18n="clearLoop">Effacer</button>
     </div>
     <div class="hint" id="loopInfo">Pas de boucle.</div>
     <div class="row" style="margin-top:12px">
-      <label><input type="checkbox" id="auto" checked> Enchaîner avec le morceau suivant</label>
+      <label><input type="checkbox" id="auto" checked> <span data-i18n="auto">Enchaîner avec le morceau suivant</span></label>
     </div>
-    <div class="hint">Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s</div>
+    <div class="hint" data-i18n="shortcuts">Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s</div>
   </section>
 
   <section id="lib">
-    <h1>Bibliothèque</h1>
-    <div id="drop">Glisse ici des fichiers ou un dossier de musique</div>
+    <h1 data-i18n="library">Bibliothèque</h1>
+    <div id="drop" data-i18n="drop">Glisse ici des fichiers ou un dossier de musique</div>
     <div class="row wrap" style="margin-bottom:10px">
-      <label class="file"><span>Ajouter des fichiers…</span><input type="file" id="files" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.aif,.aiff" multiple></label>
-      <label class="file"><span>Ajouter un dossier…</span><input type="file" id="folder" webkitdirectory multiple></label>
+      <label class="file"><span data-i18n="addFiles">Ajouter des fichiers…</span><input type="file" id="files" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.aif,.aiff" multiple></label>
+      <label class="file"><span data-i18n="addFolder">Ajouter un dossier…</span><input type="file" id="folder" webkitdirectory multiple></label>
     </div>
-    <input id="search" type="search" placeholder="Rechercher…">
+    <input id="search" type="search" data-i18n-placeholder="search" placeholder="Rechercher…">
     <div class="row wrap" id="bulk" style="margin-bottom:8px">
-      <label><input type="checkbox" id="selAll"> Tout sélectionner</label>
-      <button id="delSel" disabled>Retirer la sélection</button>
+      <label><input type="checkbox" id="selAll"> <span data-i18n="selAll">Tout sélectionner</span></label>
+      <button id="delSel" disabled data-i18n="delSel0">Retirer la sélection</button>
     </div>
     <ul id="list"></ul>
     <div class="hint" id="status"></div>
   </section>
 </main>
+<footer class="foot">
+  <a href="aide.html" data-i18n="help">Mode d'emploi</a> ·
+  <button id="lang" class="linkbtn" data-i18n="switchLang">English</button>
+</footer>
 
+<script src="i18n.js"></script>
 <script>
 (() => {
+  const T = (k, v) => I18N.t(k, v);
+  const showPick = () => { $('title').textContent = T('pick'); };
   const $ = id => document.getElementById(id);
   const AUDIO_EXT = /\.(mp3|m4a|aac|wav|flac|aif|aiff|ogg|opus)$/i;
 
@@ -176,7 +188,7 @@
     if (!shown.length) {
       const d = document.createElement('div');
       d.className = 'empty';
-      d.textContent = tracks.length ? 'Aucun résultat.' : 'Bibliothèque vide. Ajoute de la musique.';
+      d.textContent = tracks.length ? T('noResult') : T('emptyLib');
       ul.appendChild(d);
       updateBulk(shown);
       return;
@@ -190,11 +202,11 @@
       const n = document.createElement('span'); n.className = 'n'; n.textContent = t.name;
       const tp = document.createElement('span'); tp.className = 't';
       tp.textContent = t.tempo !== 100 ? t.tempo + ' %' : '';
-      const x = document.createElement('button'); x.className = 'x'; x.textContent = 'Retirer';
+      const x = document.createElement('button'); x.className = 'x'; x.textContent = T('remove');
       x.onclick = async e => {
         e.stopPropagation();
-        if (!confirm('Retirer « ' + t.name + ' » de la bibliothèque ? (le fichier d\'origine reste sur ton Mac)')) return;
-        if (current && current.id === t.id) { engine.pause(); current = null; $('title').textContent = 'Choisis un morceau'; }
+        if (!confirm(T('confirmOne', { name: t.name }))) return;
+        if (current && current.id === t.id) { engine.pause(); current = null; showPick(); }
         await dbDel(t.id);
         await reload();
       };
@@ -209,7 +221,7 @@
     for (const id of [...selected]) if (!tracks.some(t => t.id === id)) selected.delete(id);
     const n = selected.size;
     $('delSel').disabled = n === 0;
-    $('delSel').textContent = n ? `Retirer la sélection (${n})` : 'Retirer la sélection';
+    $('delSel').textContent = n ? T('delSelN', { n }) : T('delSel0');
     const all = shown.length > 0 && shown.every(t => selected.has(t.id));
     $('selAll').checked = all;
     $('selAll').indeterminate = !all && shown.some(t => selected.has(t.id));
@@ -222,12 +234,12 @@
   };
   $('delSel').onclick = async () => {
     const n = selected.size;
-    if (!n || !confirm(`Retirer ${n} morceau(x) de la bibliothèque ? (les fichiers d'origine restent sur ton Mac)`)) return;
-    if (current && selected.has(current.id)) { engine.pause(); current = null; $('title').textContent = 'Choisis un morceau'; }
+    if (!n || !confirm(T('confirmMany', { n }))) return;
+    if (current && selected.has(current.id)) { engine.pause(); current = null; showPick(); }
     for (const id of selected) await dbDel(id);
     selected.clear();
     await reload();
-    $('status').textContent = `${n} morceau(x) retiré(s).`;
+    $('status').textContent = T('removed', { n });
   };
 
   async function reload() {
@@ -238,7 +250,7 @@
 
   async function importFiles(fileList) {
     const files = [...fileList].filter(f => f.type.startsWith('audio/') || AUDIO_EXT.test(f.name));
-    if (!files.length) { $('status').textContent = 'Aucun fichier audio reconnu.'; return; }
+    if (!files.length) { $('status').textContent = T('noAudio'); return; }
     const known = new Set(tracks.map(t => t.name + '|' + t.size));
     let added = 0, skipped = 0;
     for (const f of files) {
@@ -247,15 +259,16 @@
       try {
         await dbAdd({ name, size: f.size, type: mimeOf(f.name, f.type), blob: f, tempo: 100, added: Date.now() });
         added++;
-        $('status').textContent = `Import… ${added} / ${files.length}`;
+        $('status').textContent = T('importing', { a: added, b: files.length });
       } catch (e) {
-        $('status').textContent = 'Erreur d\'import : ' + (e.name || e);
+        $('status').textContent = T('importErr', { e: e.name || e });
         break;
       }
     }
     if (added && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
     await reload();
-    $('status').textContent = `${added} morceau(x) ajouté(s)` + (skipped ? `, ${skipped} déjà présent(s)` : '') + '.';
+    $('status').textContent = T('added', { n: added }) + (skipped ? T('skipped', { n: skipped }) : '') + '.'
+      + (added && /firefox/i.test(navigator.userAgent) ? ' ' + T('firefoxPersist') : '');
   }
 
   $('files').onchange = e => { importFiles(e.target.files); e.target.value = ''; };
@@ -309,7 +322,7 @@
       str(36, 'data'); v.setUint32(40, n * 2, true);
       silent = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })));
       silent.loop = true;
-      silent.play().catch(() => { silent = null; });
+      if (e.playing) silent.play().catch(() => { silent = null; });
     };
     e.unlock = () => {
       playbackSession();
@@ -356,8 +369,9 @@
       node.port.postMessage({ type: 'clear', gen });
       dsp.postMessage({ type: 'load', channels, sampleRate: ctx.sampleRate, gen }, channels.map(c => c.buffer));
     });
-    e.play = () => { if (!node) return; e.playing = true; node.port.postMessage({ type: 'play' }); if (ctx.state !== 'running') ctx.resume().catch(() => {}); };
-    e.pause = () => { if (!node) return; e.playing = false; node.port.postMessage({ type: 'pause' }); };
+    e.setAhead = sec => dsp && dsp.postMessage({ type: 'ahead', sec });
+    e.play = () => { if (!node) return; e.playing = true; if (silent) silent.play().catch(() => {}); node.port.postMessage({ type: 'play' }); if (ctx.state !== 'running') ctx.resume().catch(() => {}); };
+    e.pause = () => { if (!node) return; e.playing = false; if (silent) silent.pause(); node.port.postMessage({ type: 'pause' }); };
     e.seek = frame => {
       if (!node) return;
       e.pos = Math.max(0, Math.min(e.frames, frame)); gen++;
@@ -413,11 +427,12 @@
       await engine.load(channels);
       if (token !== loadToken) return;
     } catch (err) {
-      $('title').textContent = t.name + ' — format non lisible par le navigateur';
+      $('title').textContent = T('unreadable', { name: t.name });
       return;
     }
     applyTempo(t.tempo, false);
     refreshTime();
+    if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: t.name, artist: 'The Ballet Pianist' });
     if (play) { engine.play(); setPlayUI(); }
   }
 
@@ -470,8 +485,8 @@
   /* ---------- Boucle ---------- */
   function loopInfo() {
     const f = x => fmt(x / engine.sr);
-    $('loopInfo').textContent = loopA === null && loopB === null ? 'Pas de boucle.'
-      : `Boucle : ${loopA === null ? '—' : f(loopA)} → ${loopB === null ? 'fin' : f(loopB)} (temps du morceau d'origine)`;
+    $('loopInfo').textContent = loopA === null && loopB === null ? T('noLoop')
+      : T('loopInfo', { a: loopA === null ? '—' : f(loopA), b: loopB === null ? T('loopEnd') : f(loopB) });
     $('setA').classList.toggle('on', loopA !== null);
     $('setB').classList.toggle('on', loopB !== null);
   }
@@ -501,6 +516,23 @@
   });
 
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  // Écran éteint / page en arrière-plan : le navigateur ralentit la page, on prépare donc le son plus à l'avance.
+  document.addEventListener('visibilitychange', () => engine.setAhead(document.hidden ? 1.5 : 0.3));
+
+  // Commandes de l'écran verrouillé et touches multimédia
+  if ('mediaSession' in navigator) {
+    const ms = navigator.mediaSession;
+    const act = (name, fn) => { try { ms.setActionHandler(name, fn); } catch (err) {} };
+    act('play', () => { if (current && !engine.playing) toggle(); });
+    act('pause', () => { if (engine.playing) toggle(); });
+    act('seekbackward', () => jump(-5));
+    act('seekforward', () => jump(5));
+  }
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIOS) $('folder').closest('label').style.display = 'none';
+  I18N.onchange = () => { renderList(); loopInfo(); if (!current) showPick(); $('status').textContent = ''; };
+  $('lang').onclick = () => I18N.toggle();
+  if (!current) showPick();
   window.__test = { importFiles, tracks: () => tracks, engine, load, state: () => ({ tempoNow, current }) };
   reload();
 })();
