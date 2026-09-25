@@ -76,6 +76,11 @@
       <button id="play" class="primary play" aria-label="Lecture / pause">▶</button>
       <button id="fwd" title="Avancer de 5 s">+5 s</button>
     </div>
+    <div class="row" style="margin-top:12px">
+      <span class="time" style="min-width:auto">Volume</span>
+      <input type="range" id="vol" min="0" max="100" step="1" value="100" aria-label="Volume">
+      <output id="volOut" class="time" style="min-width:44px;text-align:right">100 %</output>
+    </div>
 
     <div class="tempo"><output id="tempoOut">100</output><small> %</small></div>
     <input type="range" id="tempo" min="40" max="160" step="1" value="100" aria-label="Tempo">
@@ -248,6 +253,7 @@
         break;
       }
     }
+    if (added && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
     await reload();
     $('status').textContent = `${added} morceau(x) ajouté(s)` + (skipped ? `, ${skipped} déjà présent(s)` : '') + '.';
   }
@@ -310,13 +316,18 @@
       if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
       if (ctx.state !== 'running') ctx.resume().catch(() => {});
     };
-    let dsp = null, gen = 0;
+    let dsp = null, gen = 0, gainNode = null, volGain = 1;
+    // Volume de l'outil (0 à 1), courbe quadratique pour un réglage plus naturel à l'oreille.
+    e.volume = v => { volGain = v * v; if (gainNode) gainNode.gain.setTargetAtTime(volGain, ctx.currentTime, 0.02); };
     e.ready = () => {
       e.unlock();
       if (!readyP) readyP = (async () => {
         await ctx.audioWorklet.addModule('stretch-processor.js');
         node = new AudioWorkletNode(ctx, 'stretcher', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2] });
-        node.connect(ctx.destination);
+        gainNode = ctx.createGain();
+        gainNode.gain.value = volGain;
+        node.connect(gainNode);
+        gainNode.connect(ctx.destination);
         node.port.onmessage = onMsg;
         // Le calcul de l'étirement se fait dans un Worker, relié directement au lecteur par un canal privé.
         dsp = new Worker('dsp-worker.js');
@@ -356,7 +367,7 @@
     };
     e.tempo = v => dsp && dsp.postMessage({ type: 'tempo', tempo: v });
     e.loop = (a, b) => dsp && dsp.postMessage({ type: 'loop', a, b });
-    e.debug = () => ({ ctx, node });
+    e.debug = () => ({ ctx, node, gainNode });
     return e;
   })();
 
@@ -443,6 +454,19 @@
   $('reset').onclick = () => applyTempo(100);
   document.querySelectorAll('.steps button').forEach(b => b.onclick = () => applyTempo((+$('tempo').value) + (+b.dataset.d)));
 
+  /* ---------- Volume (mémorisé sur cet appareil) ---------- */
+  let vol = 100;
+  try { const s = parseInt(localStorage.getItem('volume'), 10); if (s >= 0 && s <= 100) vol = s; } catch (err) {}
+  function applyVolume(v, save = true) {
+    vol = Math.min(100, Math.max(0, Math.round(v)));
+    $('vol').value = vol;
+    $('volOut').textContent = vol + ' %';
+    engine.volume(vol / 100);
+    if (save) { try { localStorage.setItem('volume', String(vol)); } catch (err) {} }
+  }
+  $('vol').oninput = e => applyVolume(+e.target.value);
+  applyVolume(vol, false);
+
   /* ---------- Boucle ---------- */
   function loopInfo() {
     const f = x => fmt(x / engine.sr);
@@ -476,7 +500,6 @@
     else if (e.key === 'ArrowRight') { e.preventDefault(); $('fwd').click(); }
   });
 
-  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
   window.__test = { importFiles, tracks: () => tracks, engine, load, state: () => ({ tempoNow, current }) };
   reload();
