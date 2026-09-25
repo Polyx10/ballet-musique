@@ -376,7 +376,7 @@
       }
     }
     // Volume de l'outil (0 à 1), courbe quadratique pour un réglage plus naturel à l'oreille.
-    e.volume = v => { volGain = v * v; if (gainNode) gainNode.gain.setTargetAtTime(volGain, ctx.currentTime, 0.02); };
+    e.volume = v => { bgVol = v * v; bgAudio.volume = bgVol; volGain = v * v; if (gainNode) gainNode.gain.setTargetAtTime(volGain, ctx.currentTime, 0.02); };
     e.ready = () => {
       e.unlock();
       if (!readyP) readyP = (async () => {
@@ -415,19 +415,45 @@
       node.port.postMessage({ type: 'clear', gen });
       dsp.postMessage({ type: 'load', channels, sampleRate: ctx.sampleRate, gen }, channels.map(c => c.buffer));
     });
+    // ---- Écran éteint sur Android : le navigateur prive la page de puissance de calcul ; on confie alors la lecture
+    // au lecteur audio natif (le même que celui des sites de musique), qui continue normalement en arrière-plan.
+    const bgAudio = new Audio();
+    bgAudio.preservesPitch = true; bgAudio.webkitPreservesPitch = true; bgAudio.preload = 'auto';
+    let bgUrl = null, bgVol = 1, bgLoopA = null, bgLoopB = null;
+    e.bg = false;
+    bgAudio.onloadedmetadata = () => { if (e.bg) { e.frames = Math.round(bgAudio.duration * e.sr); e.onpos && e.onpos(); } };
+    bgAudio.ontimeupdate = () => {
+      if (!e.bg) return;
+      if (bgLoopA !== null && bgLoopB !== null && bgAudio.currentTime * e.sr >= bgLoopB) bgAudio.currentTime = bgLoopA / e.sr;
+      e.pos = bgAudio.currentTime * e.sr; e.onpos && e.onpos();
+    };
+    bgAudio.onended = () => { if (e.bg) { e.playing = false; e.pos = e.frames; e.onended && e.onended(); } };
+    e.bgStart = (blob, posFrames, tempo, playing) => {
+      if (bgUrl) URL.revokeObjectURL(bgUrl);
+      bgUrl = URL.createObjectURL(blob);
+      e.bg = true; e.playing = playing;
+      if (silent) silent.pause();
+      bgAudio.defaultPlaybackRate = bgAudio.playbackRate = tempo / 100;
+      bgAudio.volume = bgVol;
+      bgAudio.src = bgUrl;
+      bgAudio.onloadeddata = () => { bgAudio.currentTime = posFrames / e.sr; if (playing) bgAudio.play().catch(() => {}); bgAudio.onloadeddata = null; };
+      bgAudio.load();
+    };
+    e.bgStop = () => { const r = { sec: bgAudio.currentTime, playing: e.playing }; bgAudio.pause(); e.bg = false; return r; };
     e.setAhead = sec => dsp && dsp.postMessage({ type: 'ahead', sec });
-    e.play = () => { if (!node) return; e.playing = true; if (silent) silent.play().catch(() => {}); node.port.postMessage({ type: 'play' }); if (ctx.state !== 'running') ctx.resume().catch(() => {}); };
-    e.pause = () => { if (!node) return; e.playing = false; if (silent) silent.pause(); node.port.postMessage({ type: 'pause' }); };
+    e.play = () => { if (e.bg) { e.playing = true; bgAudio.play().catch(() => {}); return; } if (!node) return; e.playing = true; if (silent) silent.play().catch(() => {}); node.port.postMessage({ type: 'play' }); if (ctx.state !== 'running') ctx.resume().catch(() => {}); };
+    e.pause = () => { if (e.bg) { e.playing = false; bgAudio.pause(); return; } if (!node) return; e.playing = false; if (silent) silent.pause(); node.port.postMessage({ type: 'pause' }); };
     e.seek = frame => {
+      if (e.bg) { e.pos = Math.max(0, Math.min(e.frames, frame)); bgAudio.currentTime = e.pos / e.sr; e.onpos && e.onpos(); return; }
       if (!node) return;
       e.pos = Math.max(0, Math.min(e.frames, frame)); gen++;
       node.port.postMessage({ type: 'clear', gen });
       dsp.postMessage({ type: 'seek', frame: e.pos, gen });
       e.onpos && e.onpos();
     };
-    e.tempo = v => dsp && dsp.postMessage({ type: 'tempo', tempo: v });
-    e.loop = (a, b) => dsp && dsp.postMessage({ type: 'loop', a, b });
-    e.debug = () => ({ ctx, node, gainNode, onMsg });
+    e.tempo = v => { bgAudio.defaultPlaybackRate = bgAudio.playbackRate = v / 100; dsp && dsp.postMessage({ type: 'tempo', tempo: v }); };
+    e.loop = (a, b) => { bgLoopA = a; bgLoopB = b; dsp && dsp.postMessage({ type: 'loop', a, b }); };
+    e.debug = () => ({ ctx, node, gainNode, onMsg, bgAudio });
     return e;
   })();
 
@@ -452,10 +478,21 @@
     setPlayUI();
     if (!$('auto').checked || !current) return;
     const i = tracks.findIndex(t => t.id === current.id);
-    if (tracks[i + 1]) load(tracks[i + 1], true);
+    const next = tracks[i + 1];
+    if (!next) return;
+    if (engine.bg) {                        // écran éteint : on enchaîne avec le lecteur natif
+      current = next; clearLoop(); renderList(); showTitle(next);
+      applyTempo(next.tempo, false);
+      engine.bgStart(next.blob, 0, next.tempo, true);
+      setPlayUI();
+    } else load(next, true);
   };
+  function showTitle(t) {
+    $('title').textContent = t.name;
+    if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: t.name, artist: 'The Ballet Pianist' });
+  }
 
-  async function load(t, play) {
+  async function load(t, play, startSec) {
     const token = ++loadToken;
     engine.unlock();
     current = t;
@@ -477,8 +514,9 @@
       return;
     }
     applyTempo(t.tempo, false);
+    if (startSec) engine.seek(startSec * engine.sr);
     refreshTime();
-    if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: t.name, artist: 'The Ballet Pianist' });
+    showTitle(t);
     if (play) { engine.play(); setPlayUI(); }
   }
 
@@ -563,14 +601,32 @@
 
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
   // Écran éteint / page en arrière-plan : le navigateur ralentit la page, on prépare donc le son plus à l'avance.
-  document.addEventListener('visibilitychange', () => { engine.setAhead(document.hidden ? 1.5 : 0.3); engine.applyEngine(); });
+  const isAndroid = () => /Android/i.test(navigator.userAgent) || window.__forceBg;
+  function enterBg(play) {
+    if (!current || engine.bg) return;
+    const pos = engine.pos;
+    engine.pause();
+    engine.bgStart(current.blob, pos, tempoNow, play);
+    setPlayUI();
+  }
+  async function leaveBg() {
+    if (!engine.bg) return;
+    const t = current, r = engine.bgStop();
+    await load(t, r.playing, r.sec);         // le moteur fin reprend à la même position
+  }
+  document.addEventListener('visibilitychange', () => {
+    engine.setAhead(document.hidden ? 1.5 : 0.3); engine.applyEngine();
+    if (!isAndroid()) return;
+    if (document.hidden) { if (engine.playing) enterBg(true); }
+    else if (engine.bg) leaveBg();
+  });
   engine.onlite = lite => { $('lite').textContent = lite ? T('lite') : ''; };
 
   // Commandes de l'écran verrouillé et touches multimédia
   if ('mediaSession' in navigator) {
     const ms = navigator.mediaSession;
     const act = (name, fn) => { try { ms.setActionHandler(name, fn); } catch (err) {} };
-    act('play', () => { if (current && !engine.playing) toggle(); });
+    act('play', () => { if (!current || engine.playing) return; if (document.hidden && isAndroid() && !engine.bg) enterBg(true); else toggle(); });
     act('pause', () => { if (engine.playing) toggle(); });
     act('seekbackward', () => jump(-5));
     act('seekforward', () => jump(5));
