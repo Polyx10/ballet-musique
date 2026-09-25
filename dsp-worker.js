@@ -7,6 +7,7 @@ const RT = 0x00000001;           // temps réel
 const ENGINE_FINER = 0x20000000; // moteur « très haute qualité »
 const FEED = 512;                // images source injectées à chaque tour
 const CHUNK = 1024;              // images produites par paquet
+let engineName = 'finer';        // 'finer' (très haute qualité) ou 'faster' (plus léger pour les appareils lents)
 let AHEAD_SEC = 0.3;             // avance visée sur le son joué (plus grande écran éteint)
 
 let api = null, port = null, st = 0, arr = 0, ptrs = [], scratch = [];
@@ -24,7 +25,7 @@ function freeState() {
 function makeState() {
   freeState();
   const n = pcm.length;
-  st = api.rubberband_new(sr, n, RT | ENGINE_FINER, ratio, 1);
+  st = api.rubberband_new(sr, n, RT | (engineName === 'faster' ? 0 : ENGINE_FINER), ratio, 1);
   arr = api.malloc(n * 4);
   ptrs = pcm.map((_, c) => { const p = api.malloc(Math.max(FEED, CHUNK) * 4); api.memWritePtr(arr + c * 4, p); return p; });
   scratch = pcm.map(() => new Float32Array(FEED));
@@ -100,6 +101,18 @@ onmessage = async e => {
       api.rubberband_reset(st);
       pump();
       break;
+    case 'engine': {
+      if (m.name === engineName) break;
+      if (st) {
+        // on repart juste après le dernier paquet envoyé : le son déjà préparé n'est pas rejoué
+        const avail = Math.max(0, api.rubberband_available(st));
+        pos = Math.max(0, Math.min(len, pos - (avail + latency) / ratio));
+        silenceFed = 0;
+      }
+      engineName = m.name;
+      if (pcm) { makeState(); pump(); }
+      break;
+    }
     case 'ahead': AHEAD_SEC = m.sec; pump(); break;
     case 'tempo':
       ratio = 100 / m.tempo;

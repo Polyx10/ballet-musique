@@ -21,6 +21,8 @@
       added: ['{n} morceau ajouté', '{n} morceaux ajoutés'], skipped: [', {n} déjà présent', ', {n} déjà présents'],
       firefoxPersist: "Si Firefox te demande d'autoriser le stockage permanent, accepte : sinon tes musiques risquent d'être effacées.",
       unreadable: '{name} — format non lisible par le navigateur',
+      themeLabel: 'Thème', themeAuto: 'Auto', themeLight: 'Clair', themeDark: 'Sombre',
+      lite: "Mode économique : l'appareil ne suit pas le rythme, le son est un peu moins raffiné.",
       noLoop: 'Pas de boucle.', loopInfo: "Boucle : {a} → {b} (temps du morceau d'origine)", loopEnd: 'fin',
     },
     en: {
@@ -43,6 +45,8 @@
       added: ['{n} track added', '{n} tracks added'], skipped: [', {n} already there', ', {n} already there'],
       firefoxPersist: 'If Firefox asks you to allow persistent storage, accept: otherwise your music may be erased.',
       unreadable: "{name} — format not readable by this browser",
+      themeLabel: 'Theme', themeAuto: 'Auto', themeLight: 'Light', themeDark: 'Dark',
+      lite: "Economy mode: your device can't keep up, so the sound is slightly less refined.",
       noLoop: 'No loop.', loopInfo: 'Loop: {a} → {b} (time in the original track)', loopEnd: 'end',
     },
   };

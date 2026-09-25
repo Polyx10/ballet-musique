@@ -3,27 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#8a2c3f">
+<meta name="theme-color" content="#1B2631">
+<script src="theme.js"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <title>Mode d'emploi — The Ballet Pianist</title>
 <style>
+  /* Palette du logo : crème #F7EEE0, bleu nuit #1B2631, or #C49E6D (contrastes vérifiés) */
   :root {
-    --bg:#f6f4f1; --card:#fff; --ink:#22201e; --muted:#7a746e; --line:#e4dfd9;
-    --accent:#8a2c3f; --soft:#f0e4e7;
+    --bg:#F7EEE0; --card:#FBF6EC; --ink:#1B2631; --muted:#675F50; --line:#E2D5BD;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#7A5A26; --ctl:#7A5A26; --soft:#EFE2C8;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg:#161413; --card:#211f1d; --ink:#f0ece7; --muted:#9a938b; --line:#34302c; --accent:#d4677d; --soft:#3a2229; }
+    :root:not([data-theme="light"]) {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+    }
   }
+  :root[data-theme="dark"] {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+  }
+  :root[data-theme="light"] { color-scheme:light; }
+  :root[data-theme="dark"] { color-scheme:dark; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
   .wrap { max-width:720px; margin:0 auto; padding:16px;
-          padding-top:max(16px, env(safe-area-inset-top)); padding-bottom:max(32px, env(safe-area-inset-bottom));
+          padding-top:16px; padding-bottom:max(32px, env(safe-area-inset-bottom));
           padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
-  .brand { text-align:center; font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em; color:var(--accent); margin:6px 0 14px; }
+  .brand { display:flex; align-items:center; justify-content:center; gap:12px; background:#1B2631; color:#F7EEE0; border-bottom:2px solid #C49E6D;
+           font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em;
+           padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
+  .brand img { border-radius:10px; }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .seg button { border:none; border-radius:0; background:transparent; padding:6px 12px; font-size:14px; }
+  .seg button + button { border-left:1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); font-weight:600; }
+  footer .seg { margin-top:10px; }
   .bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:15px; }
-  a, .linkbtn { color:var(--accent); }
+  a, .linkbtn { color:var(--accent-text); }
   .linkbtn { background:none; border:none; padding:0; font:inherit; text-decoration:underline; cursor:pointer; }
   h1 { font-size:28px; line-height:1.2; margin:12px 0 8px; }
   h2 { font-size:19px; margin:0 0 8px; }
@@ -34,15 +53,15 @@
   li { margin:4px 0; }
   code { background:var(--soft); border-radius:6px; padding:2px 6px; font-size:14px; overflow-wrap:anywhere; }
   pre { background:var(--soft); border-radius:10px; padding:10px 12px; overflow:auto; font-size:13.5px; margin:8px 0; }
-  .note { border-left:3px solid var(--accent); background:var(--soft); border-radius:0 10px 10px 0; padding:8px 12px; margin:10px 0; }
+  .note { border-left:3px solid var(--ctl); background:var(--soft); border-radius:0 10px 10px 0; padding:8px 12px; margin:10px 0; }
   kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; padding:0 6px; font-size:13px; background:var(--bg); }
   html[lang=fr] .en, html[lang=en] .fr { display:none; }
   footer { color:var(--muted); font-size:14px; text-align:center; margin-top:20px; }
 </style>
 </head>
 <body>
+<header class="brand"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span></header>
 <div class="wrap">
-  <div class="brand">The Ballet Pianist</div>
   <div class="bar">
     <a href="./" data-i18n="backToApp">← Retour au lecteur</a>
     <button id="lang" class="linkbtn" data-i18n="switchLang">English</button>
@@ -119,6 +138,7 @@
         <li><strong>Volume</strong> : le curseur règle le volume de l'outil. Il ne peut que <em>baisser</em> le son : mettez le volume de l'appareil au maximum voulu, puis ajustez ici. Il est mémorisé sur l'appareil.</li>
         <li><strong>Enchaîner</strong> : une fois le morceau fini, l'outil joue le suivant de la liste (ordre alphabétique). Décochez la case pour vous arrêter à la fin.</li>
         <li><strong>Retirer</strong> : enlève un morceau de la bibliothèque, ou plusieurs avec « Tout sélectionner ». Le fichier d'origine reste où il est.</li>
+        <li><strong>Apparence</strong> : en bas de page, choisissez <em>Auto</em> (suit votre appareil), <em>Clair</em> ou <em>Sombre</em>. La langue (français / English) se change au même endroit.</li>
         <li><strong>Clavier (ordinateur)</strong> : <kbd>Espace</kbd> lecture / pause · <kbd>↑</kbd> <kbd>↓</kbd> tempo ±1 % · <kbd>←</kbd> <kbd>→</kbd> ±5 secondes.</li>
       </ul>
     </section>
@@ -143,7 +163,7 @@
       <h2>Si quelque chose ne va pas</h2>
       <ul>
         <li><strong>Pas de son</strong> : vérifiez le curseur de volume de l'outil, le volume de l'appareil et, sur iPhone, l'interrupteur de sonnerie. Touchez ▶ une fois : les navigateurs exigent un geste avant de jouer un son.</li>
-        <li><strong>Le son craque</strong> : fermez les autres onglets et applications, branchez l'appareil sur le secteur.</li>
+        <li><strong>Le son craque</strong> : fermez les autres onglets et applications, branchez l'appareil sur le secteur. Si l'appareil n'arrive pas à suivre, l'outil passe tout seul en « mode économique » (un message s'affiche) : le son est alors un peu moins raffiné, mais régulier.</li>
         <li><strong>« Format non lisible »</strong> : le fichier est probablement un WMA ou protégé (voir plus haut).</li>
         <li><strong>La bibliothèque a disparu</strong> : les données du navigateur ont été effacées. Réimportez vos fichiers.</li>
         <li><strong>Écran éteint</strong> : sur iPhone, la musique continue normalement. Sur certains téléphones Android, le son peut devenir irrégulier quand l'écran s'éteint : laissez l'écran allumé pendant le cours (l'outil le demande automatiquement pendant la lecture).</li>
@@ -228,6 +248,7 @@
         <li><strong>Volume</strong>: the slider sets the tool's own volume. It can only <em>lower</em> the sound: set your device to the maximum level you want, then fine-tune here. It is remembered on the device.</li>
         <li><strong>Continue</strong>: when a track ends, the next one in the list plays (alphabetical order). Untick the box to stop at the end.</li>
         <li><strong>Remove</strong>: takes a track out of the library, or several with “Select all”. The original file stays where it is.</li>
+        <li><strong>Appearance</strong>: at the bottom of the page, choose <em>Auto</em> (follows your device), <em>Light</em> or <em>Dark</em>. The language (français / English) is changed in the same place.</li>
         <li><strong>Keyboard (computer)</strong>: <kbd>Space</kbd> play / pause · <kbd>↑</kbd> <kbd>↓</kbd> tempo ±1 % · <kbd>←</kbd> <kbd>→</kbd> ±5 seconds.</li>
       </ul>
     </section>
@@ -252,7 +273,7 @@
       <h2>If something goes wrong</h2>
       <ul>
         <li><strong>No sound</strong>: check the tool's volume slider, your device volume and, on iPhone, the ring/silent switch. Tap ▶ once: browsers require a tap before playing sound.</li>
-        <li><strong>Crackling</strong>: close other tabs and apps, plug the device in.</li>
+        <li><strong>Crackling</strong>: close other tabs and apps, plug the device in. If the device cannot keep up, the tool switches to “economy mode” by itself (a message appears): the sound is then slightly less refined, but steady.</li>
         <li><strong>“Format not readable”</strong>: the file is probably a WMA or protected (see above).</li>
         <li><strong>The library has disappeared</strong>: the browser data was cleared. Import your files again.</li>
         <li><strong>Screen off</strong>: on iPhone, the music carries on normally. On some Android phones the sound can become uneven when the screen turns off: keep the screen on during class (the tool asks for this automatically while playing).</li>
@@ -266,7 +287,11 @@
     </section>
   </div>
 
-  <footer><a href="./" data-i18n="backToApp">← Retour au lecteur</a></footer>
+  <footer><a href="./" data-i18n="backToApp">← Retour au lecteur</a>
+    <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
+      <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
+    </div></div>
+  </footer>
 </div>
 <script src="i18n.js"></script>
 <script>document.getElementById('lang').onclick = () => I18N.toggle();</script>

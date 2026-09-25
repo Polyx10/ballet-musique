@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#8a2c3f">
+<meta name="theme-color" content="#1B2631">
+<script src="theme.js"></script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Ballet Pianist">
@@ -13,13 +14,23 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <title>The Ballet Pianist</title>
 <style>
+  /* Palette du logo : crème #F7EEE0, bleu nuit #1B2631, or #C49E6D (contrastes vérifiés) */
   :root {
-    --bg:#f6f4f1; --card:#fff; --ink:#22201e; --muted:#7a746e; --line:#e4dfd9;
-    --accent:#8a2c3f; --accent-ink:#fff; --soft:#f0e4e7;
+    --bg:#F7EEE0; --card:#FBF6EC; --ink:#1B2631; --muted:#675F50; --line:#E2D5BD;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#7A5A26; --ctl:#7A5A26; --soft:#EFE2C8;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg:#161413; --card:#211f1d; --ink:#f0ece7; --muted:#9a938b; --line:#34302c; --accent:#d4677d; --accent-ink:#1a0a0e; --soft:#3a2229; }
+    :root:not([data-theme="light"]) {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+    }
   }
+  :root[data-theme="dark"] {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+  }
+  :root[data-theme="light"] { color-scheme:light; }
+  :root[data-theme="dark"] { color-scheme:dark; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
   main { max-width:960px; margin:0 auto; padding:16px; display:grid; gap:16px;
@@ -32,22 +43,22 @@
   body { -webkit-tap-highlight-color:transparent; }
   button { font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; }
   button:active { transform:scale(.97); }
-  button.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  button.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--ctl); }
   .title { font-size:22px; font-weight:600; min-height:1.4em; margin-bottom:12px; overflow-wrap:anywhere; }
   .row { display:flex; align-items:center; gap:10px; }
   .row.wrap { flex-wrap:wrap; }
   .time { font-variant-numeric:tabular-nums; color:var(--muted); font-size:14px; min-width:44px; }
-  input[type=range] { width:100%; accent-color:var(--accent); }
+  input[type=range] { width:100%; accent-color:var(--ctl); }
   .play { width:72px; height:72px; border-radius:50%; font-size:28px; padding:0; }
   .tempo { text-align:center; margin:18px 0 6px; }
   .tempo output { font-size:56px; font-weight:700; font-variant-numeric:tabular-nums; }
   .tempo small { font-size:20px; color:var(--muted); }
   .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }
   .steps button { font-size:18px; padding:14px 0; }
-  .loop button.on { background:var(--soft); border-color:var(--accent); }
+  .loop button.on { background:var(--soft); border-color:var(--ctl); }
   .hint { color:var(--muted); font-size:13px; margin-top:10px; }
   #drop { border:2px dashed var(--line); border-radius:12px; padding:16px; text-align:center; color:var(--muted); margin-bottom:12px; }
-  #drop.over { border-color:var(--accent); background:var(--soft); }
+  #drop.over { border-color:var(--ctl); background:var(--soft); }
   #search { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:var(--bg); color:var(--ink); font:inherit; margin-bottom:8px; }
   ul { list-style:none; margin:0; padding:0; max-height:52vh; overflow:auto; }
   li { display:flex; align-items:center; gap:8px; padding:10px 8px; border-bottom:1px solid var(--line); cursor:pointer; border-radius:8px; }
@@ -56,17 +67,25 @@
   li .t { font-size:12px; color:var(--muted); white-space:nowrap; }
   li .x { padding:4px 8px; font-size:13px; color:var(--muted); background:none; border:none; }
   .empty { color:var(--muted); padding:12px 0; text-align:center; }
-  .brand { text-align:center; font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em; color:var(--accent);
-           padding:max(18px, env(safe-area-inset-top)) 16px 0; }
+  .brand { display:flex; align-items:center; justify-content:center; gap:12px; background:#1B2631; color:#F7EEE0; border-bottom:2px solid #C49E6D;
+           font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em;
+           padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
+  .brand img { border-radius:10px; }
+  main { padding-top:16px; }
   .foot { text-align:center; color:var(--muted); font-size:14px; padding:0 16px max(24px, env(safe-area-inset-bottom)); }
-  .foot a, .linkbtn { color:var(--accent); background:none; border:none; padding:0; font:inherit; text-decoration:underline; cursor:pointer; }
+  .foot a, .linkbtn { color:var(--accent-text); background:none; border:none; padding:0; font:inherit; text-decoration:underline; cursor:pointer; }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .seg button { border:none; border-radius:0; background:transparent; padding:6px 12px; font-size:14px; }
+  .seg button + button { border-left:1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); font-weight:600; }
+  .foot .seg { margin-top:10px; }
   label.file { display:inline-block; }
   label.file input { display:none; }
   label.file span { display:inline-block; font:inherit; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; }
 </style>
 </head>
 <body>
-<header class="brand">The Ballet Pianist</header>
+<header class="brand"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span></header>
 <main>
   <section id="player">
     <h1 data-i18n="player">Lecture</h1>
@@ -106,6 +125,7 @@
     <div class="row" style="margin-top:12px">
       <label><input type="checkbox" id="auto" checked> <span data-i18n="auto">Enchaîner avec le morceau suivant</span></label>
     </div>
+    <div class="hint" id="lite"></div>
     <div class="hint" data-i18n="shortcuts">Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s</div>
   </section>
 
@@ -128,6 +148,9 @@
 <footer class="foot">
   <a href="aide.html" data-i18n="help">Mode d'emploi</a> ·
   <button id="lang" class="linkbtn" data-i18n="switchLang">English</button>
+  <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
+    <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
+  </div></div>
 </footer>
 
 <script src="i18n.js"></script>
@@ -303,7 +326,7 @@
     const e = { sr: 44100, frames: 0, pos: 0, playing: false, onpos: null, onended: null };
     const onMsg = ev => {
       const m = ev.data;
-      if (m.type === 'pos') { e.pos = m.frame; e.under = m.under; e.onpos && e.onpos(); }
+      if (m.type === 'pos') { e.pos = m.frame; e.under = m.under; watchUnderruns(m.under); e.onpos && e.onpos(); }
       else if (m.type === 'ended') { e.playing = false; e.pos = e.frames; e.onended && e.onended(); }
     };
     // À appeler directement dans un clic : Safari n'autorise le son qu'à ce moment-là.
@@ -330,6 +353,28 @@
       if (ctx.state !== 'running') ctx.resume().catch(() => {});
     };
     let dsp = null, gen = 0, gainNode = null, volGain = 1;
+    // ---- Moteur : « fin » par défaut, « léger » si l'appareil n'arrive pas à suivre (téléphone, écran éteint) ----
+    let autoLite = false, uBase = 0, uT = 0;
+    const pref = () => { try { return localStorage.getItem('engineMode'); } catch (err) { return null; } };
+    const setPref = v => { try { localStorage.setItem('engineMode', v); } catch (err) {} };
+    e.lite = false; e.onlite = null;
+    e.applyEngine = () => {
+      const mode = pref();
+      const lite = autoLite || mode === 'always' || (mode === 'hidden' && document.hidden);
+      if (lite !== e.lite || !e.engineSent) { e.lite = lite; e.engineSent = true; dsp && dsp.postMessage({ type: 'engine', name: lite ? 'faster' : 'finer' }); e.onlite && e.onlite(lite); }
+    };
+    // Plus de 0,2 s de son manquant en 3 s = l'appareil ne suit pas : on passe au moteur léger.
+    function watchUnderruns(u) {
+      if (u === undefined || !e.playing) { uBase = u === undefined ? uBase : u; return; }
+      const now = performance.now();
+      if (now - uT > 3000) { uBase = u; uT = now; return; }
+      if (u - uBase > 9600 && !autoLite) {
+        autoLite = true;
+        if (document.hidden) setPref('hidden');                                  // écran éteint : on s'en souvient
+        else { const n = (parseInt(localStorage.getItem('engineTrips'), 10) || 0) + 1; try { localStorage.setItem('engineTrips', String(n)); } catch (err) {} if (n >= 2) setPref('always'); }
+        e.applyEngine();
+      }
+    }
     // Volume de l'outil (0 à 1), courbe quadratique pour un réglage plus naturel à l'oreille.
     e.volume = v => { volGain = v * v; if (gainNode) gainNode.gain.setTargetAtTime(volGain, ctx.currentTime, 0.02); };
     e.ready = () => {
@@ -347,10 +392,11 @@
         const link = new MessageChannel();
         node.port.postMessage({ type: 'link', port: link.port1 }, [link.port1]);
         const bytes = await (await fetch('vendor/rubberband.wasm')).arrayBuffer();
+        e.engineSent = false;
         await new Promise((res, rej) => {
           dsp.onmessage = ev => {
             const m = ev.data;
-            if (m.type === 'ready') res();
+            if (m.type === 'ready') { e.applyEngine(); res(); }
             else if (m.type === 'loaded') { e.frames = m.frames; e.sr = m.sampleRate; e.pos = 0; loadRes && loadRes(m); loadRes = null; }
           };
           dsp.onerror = err => rej(new Error(err.message || 'worker'));
@@ -381,7 +427,7 @@
     };
     e.tempo = v => dsp && dsp.postMessage({ type: 'tempo', tempo: v });
     e.loop = (a, b) => dsp && dsp.postMessage({ type: 'loop', a, b });
-    e.debug = () => ({ ctx, node, gainNode });
+    e.debug = () => ({ ctx, node, gainNode, onMsg });
     return e;
   })();
 
@@ -517,7 +563,8 @@
 
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
   // Écran éteint / page en arrière-plan : le navigateur ralentit la page, on prépare donc le son plus à l'avance.
-  document.addEventListener('visibilitychange', () => engine.setAhead(document.hidden ? 1.5 : 0.3));
+  document.addEventListener('visibilitychange', () => { engine.setAhead(document.hidden ? 1.5 : 0.3); engine.applyEngine(); });
+  engine.onlite = lite => { $('lite').textContent = lite ? T('lite') : ''; };
 
   // Commandes de l'écran verrouillé et touches multimédia
   if ('mediaSession' in navigator) {
@@ -530,7 +577,7 @@
   }
   const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (isIOS) $('folder').closest('label').style.display = 'none';
-  I18N.onchange = () => { renderList(); loopInfo(); if (!current) showPick(); $('status').textContent = ''; };
+  I18N.onchange = () => { renderList(); loopInfo(); if (!current) showPick(); $('status').textContent = ''; $('lite').textContent = engine.lite ? T('lite') : ''; };
   $('lang').onclick = () => I18N.toggle();
   if (!current) showPick();
   window.__test = { importFiles, tracks: () => tracks, engine, load, state: () => ({ tempoNow, current }) };
