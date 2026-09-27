@@ -225,15 +225,17 @@
     return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   };
   const cleanName = n => n.replace(/\.[^.]+$/, '');
+  const fold = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const matchesQuery = (name, q) => { const terms = fold(q).split(/\s+/).filter(Boolean); const n = fold(name); return terms.every(w => n.includes(w)); };
   const MIME = { mp3:'audio/mpeg', m4a:'audio/mp4', aac:'audio/aac', wav:'audio/wav', flac:'audio/flac', aif:'audio/aiff', aiff:'audio/aiff', ogg:'audio/ogg', opus:'audio/ogg' };
   const mimeOf = (name, type) => (type && type.startsWith('audio/') && type !== 'audio/x-m4a' ? type : MIME[(name.match(/\.([^.]+)$/) || [])[1]?.toLowerCase()] || 'audio/mpeg');
 
   /* ---------- Bibliothèque ---------- */
   function renderList() {
-    const q = $('search').value.trim().toLowerCase();
+    const q = $('search').value.trim();
     const ul = $('list');
     ul.innerHTML = '';
-    const shown = tracks.filter(t => t.name.toLowerCase().includes(q));
+    const shown = tracks.filter(t => matchesQuery(t.name, q));
     if (!shown.length) {
       const d = document.createElement('div');
       d.className = 'empty';
@@ -277,8 +279,8 @@
   }
 
   $('selAll').onchange = e => {
-    const q = $('search').value.trim().toLowerCase();
-    for (const t of tracks.filter(t => t.name.toLowerCase().includes(q))) e.target.checked ? selected.add(t.id) : selected.delete(t.id);
+    const q = $('search').value.trim();
+    for (const t of tracks.filter(t => matchesQuery(t.name, q))) e.target.checked ? selected.add(t.id) : selected.delete(t.id);
     renderList();
   };
   $('delSel').onclick = async () => {

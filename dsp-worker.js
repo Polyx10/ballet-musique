@@ -5,6 +5,7 @@ importScripts('vendor/rubberband.umd.min.js');
 
 const RT = 0x00000001;           // temps réel
 const ENGINE_FINER = 0x20000000; // moteur « très haute qualité »
+const CHANNELS_TOGETHER = 0x10000000; // évite que les deux canaux stéréo se déphasent l'un de l'autre
 const FEED = 512;                // images source injectées à chaque tour
 const CHUNK = 1024;              // images produites par paquet
 let engineName = 'finer';        // 'finer' (très haute qualité) ou 'faster' (plus léger pour les appareils lents)
@@ -25,7 +26,7 @@ function freeState() {
 function makeState() {
   freeState();
   const n = pcm.length;
-  st = api.rubberband_new(sr, n, RT | (engineName === 'faster' ? 0 : ENGINE_FINER), ratio, 1);
+  st = api.rubberband_new(sr, n, RT | CHANNELS_TOGETHER | (engineName === 'faster' ? 0 : ENGINE_FINER), ratio, 1);
   arr = api.malloc(n * 4);
   ptrs = pcm.map((_, c) => { const p = api.malloc(Math.max(FEED, CHUNK) * 4); api.memWritePtr(arr + c * 4, p); return p; });
   scratch = pcm.map(() => new Float32Array(FEED));
