@@ -37,7 +37,7 @@
   main { max-width:960px; margin:0 auto; padding:16px; display:grid; gap:16px;
          padding-top:16px; padding-bottom:max(16px, env(safe-area-inset-bottom));
          padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
-  @media (min-width:800px){ main{ grid-template-columns: 1fr 1fr; align-items:start; } }
+  @media (min-width:800px){ main{ grid-template-columns: 1fr 1fr; align-items:start; } .span2{ grid-column:1 / -1; } }
   section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
   h1 { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; font-weight:600; }
   button, label, input { touch-action:manipulation; }
@@ -60,7 +60,8 @@
   .hint { color:var(--muted); font-size:13px; margin-top:10px; }
   #drop { border:2px dashed var(--line); border-radius:12px; padding:16px; text-align:center; color:var(--muted); margin-bottom:12px; }
   #drop.over { border-color:var(--ctl); background:var(--soft); }
-  #search { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:var(--bg); color:var(--ink); font:inherit; margin-bottom:8px; }
+  #searchbar { padding:12px 16px; }
+  #search { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:var(--bg); color:var(--ink); font:inherit; }
   ul { list-style:none; margin:0; padding:0; max-height:52vh; overflow:auto; }
   li { display:flex; align-items:center; gap:8px; padding:10px 8px; border-bottom:1px solid var(--line); cursor:pointer; border-radius:8px; }
   li.cur { background:var(--soft); }
@@ -121,6 +122,11 @@
       <input type="range" id="vol" min="0" max="100" step="1" value="100" data-i18n-aria="volume" aria-label="Volume">
       <output id="volOut" class="time" style="min-width:44px;text-align:right">100 %</output>
     </div>
+    <div class="row" style="margin-top:10px">
+      <span class="time" style="min-width:auto" data-i18n="clarity">Clarté</span>
+      <input type="range" id="clarity" min="0" max="100" step="5" value="0" data-i18n-aria="clarity" aria-label="Clarté">
+      <output id="clarityOut" class="time" style="min-width:44px;text-align:right">0 %</output>
+    </div>
 
     <div class="tempo"><output id="tempoOut">100</output><small> %</small></div>
     <input type="range" id="tempo" min="40" max="160" step="1" value="100" data-i18n-aria="tempo" aria-label="Tempo">
@@ -151,7 +157,12 @@
       <div class="row wrap" style="margin-top:8px"><a href="aide.html#ecran-eteint" data-i18n="learnMore"></a><button id="bgNoticeOk" data-i18n="gotIt"></button></div>
     </div>
     <div class="hint" id="lite"></div>
+    <div class="hint"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a></div>
     <div class="hint" data-i18n="shortcuts">Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s</div>
+  </section>
+
+  <section id="searchbar" class="span2">
+    <input id="search" type="search" data-i18n-placeholder="search" placeholder="Rechercher…">
   </section>
 
   <section id="lib">
@@ -161,7 +172,6 @@
       <label class="file"><span data-i18n="addFiles">Ajouter des fichiers…</span><input type="file" id="files" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.aif,.aiff" multiple></label>
       <label class="file"><span data-i18n="addFolder">Ajouter un dossier…</span><input type="file" id="folder" webkitdirectory multiple></label>
     </div>
-    <input id="search" type="search" data-i18n-placeholder="search" placeholder="Rechercher…">
     <div class="row wrap" id="bulk" style="margin-bottom:8px">
       <label><input type="checkbox" id="selAll"> <span data-i18n="selAll">Tout sélectionner</span></label>
       <button id="delSel" disabled data-i18n="delSel0">Retirer la sélection</button>
@@ -380,7 +390,7 @@
       if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
       if (ctx.state !== 'running') ctx.resume().catch(() => {});
     };
-    let dsp = null, gen = 0, gainNode = null, volGain = 1;
+    let dsp = null, gen = 0, gainNode = null, volGain = 1, clarityFilter = null, clarityGain = 0;
     // ---- Moteur : « fin » par défaut, « léger » si l'appareil n'arrive pas à suivre (téléphone, écran éteint) ----
     let autoLite = false, uBase = 0, uT = 0;
     const pref = () => { try { return localStorage.getItem('engineMode'); } catch (err) { return null; } };
@@ -406,6 +416,11 @@
     // Volume de l'outil (0 à 1), courbe quadratique pour un réglage plus naturel à l'oreille.
     e.bgTrim = v => { bgTrim = v; bgAudio.volume = bgLevel(); };
     e.volume = v => { bgVol = v * v; bgAudio.volume = bgLevel(); volGain = v * v; if (gainNode) gainNode.gain.setTargetAtTime(volGain, ctx.currentTime, 0.02); };
+    // « Clarté » : légère remontée des aigus (utile sur un ampli terne ou un enregistrement ancien).
+    // Ne s'applique qu'au son fin ; le lecteur natif d'Android en arrière-plan n'en profite pas (voir mode d'emploi).
+    e.clarity = v => { clarityGain = v * 9 / 100; if (clarityFilter) clarityFilter.gain.setTargetAtTime(clarityGain, ctx.currentTime, 0.05); };
+    // Efface la mémoire de « mode économique » d'un appareil, au cas où elle serait restée activée par erreur.
+    e.resetQuality = () => { try { localStorage.removeItem('engineMode'); localStorage.removeItem('engineTrips'); } catch (err) {} autoLite = false; e.applyEngine(); };
     e.ready = () => {
       e.unlock();
       if (!readyP) readyP = (async () => {
@@ -413,8 +428,11 @@
         node = new AudioWorkletNode(ctx, 'stretcher', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2] });
         gainNode = ctx.createGain();
         gainNode.gain.value = volGain;
+        clarityFilter = ctx.createBiquadFilter();
+        clarityFilter.type = 'highshelf'; clarityFilter.frequency.value = 3200; clarityFilter.gain.value = clarityGain;
         node.connect(gainNode);
-        gainNode.connect(ctx.destination);
+        gainNode.connect(clarityFilter);
+        clarityFilter.connect(ctx.destination);
         node.port.onmessage = onMsg;
         // Le calcul de l'étirement se fait dans un Worker, relié directement au lecteur par un canal privé.
         dsp = new Worker('dsp-worker.js');
@@ -502,7 +520,7 @@
     };
     e.tempo = v => { bgAudio.defaultPlaybackRate = bgAudio.playbackRate = v / 100; dsp && dsp.postMessage({ type: 'tempo', tempo: v }); };
     e.loop = (a, b) => { bgLoopA = a; bgLoopB = b; dsp && dsp.postMessage({ type: 'loop', a, b }); };
-    e.debug = () => ({ ctx, node, gainNode, onMsg, bgAudio });
+    e.debug = () => ({ ctx, node, gainNode, clarityFilter, onMsg, bgAudio });
     return e;
   })();
 
@@ -739,6 +757,17 @@
   otherHelp();
   const bgLink = () => { const l = document.querySelector('#bgNotice a'); if (l) l.href = 'aide.html#ecran-eteint' + (I18N.lang() === 'en' ? '-en' : ''); };
   bgLink();
+  const clarityUI = (v, save) => { $('clarity').value = v; $('clarityOut').textContent = v + ' %'; engine.clarity(v); if (save) { try { localStorage.setItem('clarity', String(v)); } catch (err) {} } };
+  let clarity0 = 0; try { const s = parseInt(localStorage.getItem('clarity'), 10); if (s >= 0 && s <= 100) clarity0 = s; } catch (err) {}
+  clarityUI(clarity0, false);
+  $('clarity').oninput = e => clarityUI(+e.target.value, true);
+
+  $('resetQuality').onclick = e => {
+    e.preventDefault();
+    engine.resetQuality();
+    $('status').textContent = T('qualityReset');
+  };
+
   const bgTrimUI = (v, save) => { $('bgTrim').value = v; $('bgTrimOut').textContent = v + ' %'; engine.bgTrim(v / 100); if (save) { try { localStorage.setItem('bgTrim', String(v)); } catch (err) {} } };
   let trim = 60; try { const s = parseInt(localStorage.getItem('bgTrim'), 10); if (s >= 10 && s <= 100) trim = s; } catch (err) {}
   bgTrimUI(trim, false);
