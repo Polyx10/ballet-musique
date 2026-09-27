@@ -147,6 +147,9 @@
     <div class="row" style="margin-top:12px">
       <label><input type="checkbox" id="auto" checked> <span data-i18n="auto">Enchaîner avec le morceau suivant</span></label>
     </div>
+    <div class="row" style="margin-top:8px">
+      <label><input type="checkbox" id="repeat"> <span data-i18n="repeat">Répéter ce morceau</span></label>
+    </div>
     <div class="row" id="bgTrimRow" hidden style="margin-top:10px">
       <span class="time" style="min-width:auto" data-i18n="bgTrim">Volume écran éteint</span>
       <input type="range" id="bgTrim" min="10" max="100" step="5" value="60" data-i18n-aria="bgTrim" aria-label="Volume écran éteint">
@@ -466,7 +469,7 @@
     // au lecteur audio natif (le même que celui des sites de musique), qui continue normalement en arrière-plan.
     const bgAudio = new Audio();
     bgAudio.preservesPitch = true; bgAudio.webkitPreservesPitch = true; bgAudio.preload = 'auto';
-    let bgUrl = null, bgVol = 1, bgTrim = 0.6, bgLoopA = null, bgLoopB = null, bgPrepared = null;
+    let bgUrl = null, bgVol = 1, bgTrim = 0.6, bgLoopA = null, bgLoopB = null, bgPrepared = null, repeatOn = false;
     const bgLevel = () => bgVol * bgTrim;   // le lecteur natif sort plus fort que le moteur fin sur Android : réglable
     e.bg = false;
     bgAudio.onloadedmetadata = () => { if (e.bg) { e.frames = Math.round(bgAudio.duration * e.sr); e.onpos && e.onpos(); } };
@@ -507,6 +510,9 @@
       bgAudio.load();
     };
     e.bgStop = () => { const r = { sec: bgAudio.currentTime, playing: e.playing }; bgAudio.pause(); e.bg = false; return r; };
+    // Répéter ce morceau : sur Android en arrière-plan, on utilise la boucle native du lecteur (fiable, sans JavaScript
+    // à réveiller) ; au premier plan, c'est engine.onended qui relance le morceau (voir plus bas).
+    e.setRepeat = v => { repeatOn = v; bgAudio.loop = v; };
     e.setAhead = sec => dsp && dsp.postMessage({ type: 'ahead', sec });
     e.play = () => { if (e.bg) { e.playing = true; bgAudio.play().catch(() => {}); return; } if (!node) return; e.playing = true; if (silent) silent.play().catch(() => {}); node.port.postMessage({ type: 'play' }); if (ctx.state !== 'running') ctx.resume().catch(() => {}); };
     e.pause = () => { if (e.bg) { e.playing = false; bgAudio.pause(); return; } if (!node) return; e.playing = false; if (silent) silent.pause(); node.port.postMessage({ type: 'pause' }); };
@@ -543,6 +549,9 @@
   }
   engine.onpos = refreshTime;
   engine.onended = () => {
+    // Le lecteur natif (Android en arrière-plan) boucle tout seul quand « Répéter » est actif : ce cas ne
+    // déclenche donc pas 'ended'. Ici on ne traite que le moteur fin, au premier plan.
+    if ($('repeat').checked && current) { engine.seek(0); engine.play(); setPlayUI(); return; }
     setPlayUI();
     if (!$('auto').checked || !current) return;
     const i = tracks.findIndex(t => t.id === current.id);
@@ -550,6 +559,7 @@
     if (!next) return;
     goTrack(next, true, true);
   };
+  $('repeat').onchange = () => engine.setRepeat($('repeat').checked);
   // Passe à un autre morceau : avec le lecteur natif si l'écran est éteint (Android), sinon avec le moteur fin.
   function goTrack(t, play, noDelay) {
     if (engine.bg) {
@@ -661,7 +671,12 @@
     if (current && persist) {
       current.tempo = v;
       clearTimeout(saveTimer);
-      saveTimer = setTimeout(async () => { await dbPut(current); renderList(); }, 400);
+      const snapshot = current;
+      saveTimer = setTimeout(async () => {
+        if (snapshot.id == null || !tracks.includes(snapshot)) return;   // morceau retiré entre-temps
+        try { await dbPut(snapshot); } catch (err) {}
+        renderList();
+      }, 400);
     }
   }
   $('tempo').oninput = e => applyTempo(+e.target.value);
