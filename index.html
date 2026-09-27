@@ -56,7 +56,6 @@
   .tempo small { font-size:20px; color:var(--muted); }
   .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }
   .steps button { font-size:18px; padding:14px 0; }
-  .loop button.on { background:var(--soft); border-color:var(--ctl); }
   .hint { color:var(--muted); font-size:13px; margin-top:10px; }
   #drop { border:2px dashed var(--line); border-radius:12px; padding:16px; text-align:center; color:var(--muted); margin-bottom:12px; }
   #drop.over { border-color:var(--ctl); background:var(--soft); }
@@ -138,12 +137,6 @@
       <button id="reset" data-i18n="reset">Tempo d'origine (100 %)</button>
     </div>
 
-    <div class="row wrap loop" style="margin-top:14px">
-      <button id="setA" data-i18n="setA">Départ de boucle</button>
-      <button id="setB" data-i18n="setB">Fin de boucle</button>
-      <button id="clearLoop" data-i18n="clearLoop">Effacer</button>
-    </div>
-    <div class="hint" id="loopInfo">Pas de boucle.</div>
     <div class="row" style="margin-top:12px">
       <label><input type="checkbox" id="auto" checked> <span data-i18n="auto">Enchaîner avec le morceau suivant</span></label>
     </div>
@@ -230,7 +223,6 @@
   let tracks = [];
   const selected = new Set();
   let current = null;
-  let loopA = null, loopB = null;   // en images (frames) du morceau d'origine
 
   const fmt = s => {
     if (!isFinite(s)) return '0:00';
@@ -421,7 +413,7 @@
     e.volume = v => { bgVol = v * v; bgAudio.volume = bgLevel(); volGain = v * v; if (gainNode) gainNode.gain.setTargetAtTime(volGain, ctx.currentTime, 0.02); };
     // « Clarté » : légère remontée des aigus (utile sur un ampli terne ou un enregistrement ancien).
     // Ne s'applique qu'au son fin ; le lecteur natif d'Android en arrière-plan n'en profite pas (voir mode d'emploi).
-    e.clarity = v => { clarityGain = v * 9 / 100; if (clarityFilter) clarityFilter.gain.setTargetAtTime(clarityGain, ctx.currentTime, 0.05); };
+    e.clarity = v => { clarityGain = v * 13 / 100; if (clarityFilter) clarityFilter.gain.setTargetAtTime(clarityGain, ctx.currentTime, 0.05); };
     // Efface la mémoire de « mode économique » d'un appareil, au cas où elle serait restée activée par erreur.
     e.resetQuality = () => { try { localStorage.removeItem('engineMode'); localStorage.removeItem('engineTrips'); } catch (err) {} autoLite = false; e.applyEngine(); };
     e.ready = () => {
@@ -432,7 +424,7 @@
         gainNode = ctx.createGain();
         gainNode.gain.value = volGain;
         clarityFilter = ctx.createBiquadFilter();
-        clarityFilter.type = 'highshelf'; clarityFilter.frequency.value = 3200; clarityFilter.gain.value = clarityGain;
+        clarityFilter.type = 'highshelf'; clarityFilter.frequency.value = 2800; clarityFilter.gain.value = clarityGain;
         node.connect(gainNode);
         gainNode.connect(clarityFilter);
         clarityFilter.connect(ctx.destination);
@@ -469,13 +461,12 @@
     // au lecteur audio natif (le même que celui des sites de musique), qui continue normalement en arrière-plan.
     const bgAudio = new Audio();
     bgAudio.preservesPitch = true; bgAudio.webkitPreservesPitch = true; bgAudio.preload = 'auto';
-    let bgUrl = null, bgVol = 1, bgTrim = 0.6, bgLoopA = null, bgLoopB = null, bgPrepared = null, repeatOn = false;
+    let bgUrl = null, bgVol = 1, bgTrim = 0.6, bgPrepared = null, repeatOn = false;
     const bgLevel = () => bgVol * bgTrim;   // le lecteur natif sort plus fort que le moteur fin sur Android : réglable
     e.bg = false;
     bgAudio.onloadedmetadata = () => { if (e.bg) { e.frames = Math.round(bgAudio.duration * e.sr); e.onpos && e.onpos(); } };
     bgAudio.ontimeupdate = () => {
       if (!e.bg) return;
-      if (bgLoopA !== null && bgLoopB !== null && bgAudio.currentTime * e.sr >= bgLoopB) bgAudio.currentTime = bgLoopA / e.sr;
       e.pos = bgAudio.currentTime * e.sr; e.onpos && e.onpos();
     };
     bgAudio.onended = () => { if (e.bg) { e.playing = false; e.pos = e.frames; e.onended && e.onended(); } };
@@ -525,7 +516,6 @@
       e.onpos && e.onpos();
     };
     e.tempo = v => { bgAudio.defaultPlaybackRate = bgAudio.playbackRate = v / 100; dsp && dsp.postMessage({ type: 'tempo', tempo: v }); };
-    e.loop = (a, b) => { bgLoopA = a; bgLoopB = b; dsp && dsp.postMessage({ type: 'loop', a, b }); };
     e.debug = () => ({ ctx, node, gainNode, clarityFilter, onMsg, bgAudio });
     return e;
   })();
@@ -563,7 +553,7 @@
   // Passe à un autre morceau : avec le lecteur natif si l'écran est éteint (Android), sinon avec le moteur fin.
   function goTrack(t, play, noDelay) {
     if (engine.bg) {
-      current = t; clearLoop(); renderList(); showTitle(t);
+      current = t; renderList(); showTitle(t);
       applyTempo(t.tempo, false);
       engine.bgStart(t.blob, 0, t.tempo, play);
       setPlayUI();
@@ -591,7 +581,6 @@
     setPlayUI();
     $('title').textContent = t.name;
     $('seek').value = 0; $('cur').textContent = '0:00'; $('dur').textContent = '0:00';
-    clearLoop();
     renderList();
     try {
       const raw = await t.blob.arrayBuffer();
@@ -697,20 +686,7 @@
   applyVolume(vol, false);
 
   /* ---------- Boucle ---------- */
-  function loopInfo() {
-    const f = x => fmt(x / engine.sr);
-    $('loopInfo').textContent = loopA === null && loopB === null ? T('noLoop')
-      : T('loopInfo', { a: loopA === null ? '—' : f(loopA), b: loopB === null ? T('loopEnd') : f(loopB) });
-    $('setA').classList.toggle('on', loopA !== null);
-    $('setB').classList.toggle('on', loopB !== null);
-  }
-  function sendLoop() { engine.loop(loopA !== null && loopB !== null ? loopA : null, loopA !== null && loopB !== null ? loopB : null); }
-  function clearLoop() { loopA = loopB = null; loopInfo(); sendLoop(); }
-  $('setA').onclick = () => { loopA = Math.round(engine.pos); if (loopB !== null && loopB <= loopA) loopB = null; loopInfo(); sendLoop(); };
-  $('setB').onclick = () => { if (loopA === null) loopA = 0; loopB = Math.round(engine.pos); if (loopB <= loopA) { loopB = null; } loopInfo(); sendLoop(); };
-  $('clearLoop').onclick = clearLoop;
-
-  /* ---------- Écran maintenu allumé ---------- */
+  /* ---------- Écran maintenu allumé  /* ---------- Écran maintenu allumé ---------- */
   let lock = null;
   async function wake(on) {
     try {
@@ -789,7 +765,7 @@
   $('bgTrim').oninput = e => bgTrimUI(+e.target.value, true);
   if (isAndroid()) $('bgTrimRow').hidden = false;
   $('bgNoticeOk').onclick = () => { $('bgNotice').hidden = true; try { localStorage.setItem('bgNoticeSeen', '1'); } catch (err) {} };
-  I18N.onchange = () => { bgLink(); otherHelp(); renderList(); loopInfo(); if (!current) showPick(); $('status').textContent = ''; $('lite').textContent = engine.lite ? T('lite') : ''; };
+  I18N.onchange = () => { bgLink(); otherHelp(); renderList(); if (!current) showPick(); $('status').textContent = ''; $('lite').textContent = engine.lite ? T('lite') : ''; };
   $('lang').onclick = () => I18N.toggle();
   if (!current) showPick();
   window.__test = { msHandlers, importFiles, tracks: () => tracks, engine, load, state: () => ({ tempoNow, current }) };

@@ -13,7 +13,7 @@ let AHEAD_SEC = 0.3;             // avance visée sur le son joué (plus grande 
 
 let api = null, port = null, st = 0, arr = 0, ptrs = [], scratch = [];
 let pcm = null, len = 0, pos = 0, sr = 48000, gen = 0;
-let ratio = 1, loopA = null, loopB = null, latency = 0;
+let ratio = 1, latency = 0;
 let sent = 0, acked = 0, silenceFed = 0, finished = false, pumping = false, timer = 0;
 
 function freeState() {
@@ -35,7 +35,6 @@ function makeState() {
 
 function feed() {
   for (let i = 0; i < FEED; i++) {
-    if (loopA !== null && loopB !== null && loopB > loopA && pos >= loopB) pos = loopA;
     if (pos < len) {
       for (let c = 0; c < pcm.length; c++) scratch[c][i] = pcm[c][pos];
       pos++;
@@ -90,7 +89,7 @@ onmessage = async e => {
     }
     case 'load':
       pcm = m.channels; len = pcm[0].length; sr = m.sampleRate; gen = m.gen;
-      pos = 0; sent = acked = 0; silenceFed = 0; finished = false; loopA = loopB = null;
+      pos = 0; sent = acked = 0; silenceFed = 0; finished = false;
       makeState();
       postMessage({ type: 'loaded', frames: len, sampleRate: sr });
       pump();
@@ -118,10 +117,6 @@ onmessage = async e => {
     case 'tempo':
       ratio = 100 / m.tempo;
       if (st) api.rubberband_set_time_ratio(st, ratio);
-      break;
-    case 'loop':
-      loopA = m.a === null ? null : Math.round(m.a);
-      loopB = m.b === null ? null : Math.round(m.b);
       break;
   }
 };

@@ -6,7 +6,6 @@
       player: 'Lecture', pick: 'Choisis un morceau',
       back: 'Reculer de 5 s', fwd: 'Avancer de 5 s', playPause: 'Lecture / pause', position: 'Position',
       volume: 'Volume', clarity: 'Clarté', qualityReset: 'Qualité audio réinitialisée sur cet appareil.', resetQuality: 'Réinitialiser la qualité audio sur cet appareil', tempo: 'Tempo', reset: "Tempo d'origine (100 %)",
-      setA: 'Départ de boucle', setB: 'Fin de boucle', clearLoop: 'Effacer',
       auto: 'Enchaîner avec le morceau suivant', repeat: 'Répéter ce morceau',
       shortcuts: 'Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s',
       library: 'Bibliothèque', drop: 'Glisse ici des fichiers ou un dossier de musique',
@@ -27,14 +26,12 @@
       bgNotice: "Android : pour que la musique continue écran éteint, autorisez votre navigateur à tourner en arrière-plan (Réglages > Applications > votre navigateur > Batterie > Sans restriction).", learnMore: 'En savoir plus', gotIt: 'Compris',
       themeLabel: 'Thème', themeAuto: 'Auto', themeLight: 'Clair', themeDark: 'Sombre',
       lite: "Mode économique : l'appareil ne suit pas le rythme, le son est un peu moins raffiné.",
-      noLoop: 'Pas de boucle.', loopInfo: "Boucle : {a} → {b} (temps du morceau d'origine)", loopEnd: 'fin',
     },
     en: {
       appTitle: 'The Ballet Pianist', helpTitle: 'How to use — The Ballet Pianist', backToApp: '← Back to the player',
       player: 'Player', pick: 'Pick a track',
       back: 'Back 5 s', fwd: 'Forward 5 s', playPause: 'Play / pause', position: 'Position',
       volume: 'Volume', clarity: 'Clarity', qualityReset: 'Audio quality reset on this device.', resetQuality: 'Reset audio quality on this device', tempo: 'Tempo', reset: 'Original tempo (100 %)',
-      setA: 'Loop start', setB: 'Loop end', clearLoop: 'Clear',
       auto: 'Continue with the next track', repeat: 'Repeat this track',
       shortcuts: 'Shortcuts: space = play/pause · ↑ ↓ = tempo ±1 % · ← → = ±5 s',
       library: 'Library', drop: 'Drop music files or a folder here',
@@ -55,7 +52,6 @@
       bgNotice: "Android: to keep the music playing with the screen off, allow your browser to run in the background (Settings > Apps > your browser > Battery > Unrestricted).", learnMore: 'Learn more', gotIt: 'Got it',
       themeLabel: 'Theme', themeAuto: 'Auto', themeLight: 'Light', themeDark: 'Dark',
       lite: "Economy mode: your device can't keep up, so the sound is slightly less refined.",
-      noLoop: 'No loop.', loopInfo: 'Loop: {a} → {b} (time in the original track)', loopEnd: 'end',
     },
   };
 
