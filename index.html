@@ -51,20 +51,21 @@
   main { max-width:680px; margin:0 auto; padding:16px; display:grid; gap:16px;
          padding-top:16px; padding-bottom:max(16px, env(safe-area-inset-bottom));
          padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
-  .brand { position:relative; }
-  #donateBtn { position:absolute; right:max(12px, env(safe-area-inset-right)); top:50%; transform:translateY(-50%);
+  /* Le bouton se place par rapport à la zone du titre (.brand-in), pas au bandeau entier : sur iPhone en mode application, le bandeau contient en plus la zone de la barre d'état. */
+  .brand-in { position:relative; flex:1; display:flex; align-items:center; justify-content:center; gap:12px; min-height:44px; }
+  #donateBtn { position:absolute; right:0; top:50%; transform:translateY(-50%);
                background:transparent; color:#F7EEE0; border:1px solid #C49E6D; border-radius:999px; padding:6px 13px;
                font:500 14px/1.2 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; letter-spacing:0; white-space:nowrap; }
   #donateBtn:hover, #donateBtn[aria-expanded="true"] { background:#C49E6D; color:#1B2631; }
   #donateBtn .heart { color:#C49E6D; } #donateBtn:hover .heart, #donateBtn[aria-expanded="true"] .heart { color:#1B2631; }
-  #donatePanel { position:absolute; z-index:20; right:max(12px, env(safe-area-inset-right)); top:calc(100% + 8px); width:min(340px, calc(100vw - 24px));
+  #donatePanel { position:absolute; z-index:20; right:0; top:calc(100% + 22px); width:min(340px, calc(100vw - 24px));
                  background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:14px; padding:16px; text-align:center;
                  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; letter-spacing:0; box-shadow:0 8px 28px rgba(0,0,0,.28); }
   #donatePanel p { margin:0 0 12px; }
   #donatePanel a.go { display:inline-block; background:var(--accent); color:var(--accent-ink); font-weight:600; text-decoration:none; border-radius:12px; padding:10px 18px; }
   #donateBtn .short { display:none; }
   @media (max-width:640px) { #donateBtn .long { display:none; } #donateBtn .short { display:inline; } }
-  @media (max-width:480px) { .brand { font-size:19px; padding-right:60px; } #donateBtn { width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; font-size:17px; }
+  @media (max-width:480px) { .brand { font-size:19px; } .brand-in { padding-right:44px; } #donateBtn { width:36px; height:36px; padding:0; display:flex; align-items:center; justify-content:center; font-size:17px; }
                              #donateBtn .short { display:none; } }
   section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
   h1 { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; font-weight:600; }
@@ -124,13 +125,13 @@
 </style>
 </head>
 <body>
-<header class="brand"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span>
+<header class="brand"><div class="brand-in"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span>
   <button id="donateBtn" type="button" aria-expanded="false" aria-controls="donatePanel" data-i18n-aria="support" data-i18n-title="support"><span class="long" data-i18n="donateLong">Soutenir le projet</span><span class="short" data-i18n="donateShort">Soutenir</span> <span class="heart" aria-hidden="true">♥</span></button>
   <div id="donatePanel" role="dialog" aria-label="Soutenir le projet" data-i18n-aria="support" hidden>
     <p data-i18n="donateText"></p>
     <a class="go" href="don.html" data-i18n="donateGo">Faire un don</a>
   </div>
-</header>
+</div></header>
 <main>
   <section id="player">
     <h1 data-i18n="player">Lecture</h1>
