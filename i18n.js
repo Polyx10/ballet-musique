@@ -25,7 +25,7 @@
       delay: 'Départ différé', delayNone: 'Aucun', startingIn: 'Départ dans {n} s… (touchez ✕ pour annuler)',
       bgTrim: 'Volume écran éteint',
       bgNotice: "Android : pour que la musique continue écran éteint, autorisez votre navigateur à tourner en arrière-plan (Réglages > Applications > votre navigateur > Batterie > Sans restriction).", learnMore: 'En savoir plus', gotIt: 'Compris',
-      donateText: "Gratuit, libre (open source), sans publicité, et vos musiques restent sur votre appareil. Si The Ballet Pianist vous est utile, vous pouvez le soutenir : chacun donne ce qu'il veut, ou rien du tout.", donateBtn: 'Soutenir le projet ♥', donateLong: 'Soutenir le projet', donateShort: 'Don', donateGo: 'Faire un don',
+      donateText: "Gratuit, libre (open source), sans publicité, et vos musiques restent sur votre appareil. Si The Ballet Pianist vous est utile, vous pouvez le soutenir : chacun donne ce qu'il veut, ou rien du tout.", donateBtn: 'Soutenir le projet ♥', donateLong: 'Soutenir le projet', donateShort: 'Nous soutenir', donateGo: 'Faire un don',
       themeLabel: 'Thème', themeAuto: 'Auto', themeLight: 'Clair', themeDark: 'Sombre',
       lite: "Mode économique : l'appareil ne suit pas le rythme, le son est un peu moins raffiné.",
     },

@@ -1,6 +1,6 @@
 # The Ballet Pianist
 
-Lecteur de musique pour cours de danse : le tempo se règle en direct (40 à 160 %) sans changer la hauteur du son.
+Lecteur de musique pour cours de danse : le tempo se règle en direct (65 à 130 %) sans changer la hauteur du son.
 
 Développé par / Developed by Aymeric Guilluy-Eyraud
 
@@ -31,3 +31,9 @@ Le nom « The Ballet Pianist », le logo et les icônes **ne sont pas couverts**
 The code is distributed under the **GNU GPL version 2 or later** (`GPL-2.0-or-later`), see [`LICENSE`](LICENSE).
 Third-party components and their corresponding source code are listed in [`NOTICE.md`](NOTICE.md).
 The name "The Ballet Pianist", the logo and the icons are **not covered** by this license (all rights reserved).
+
+## Pourquoi 65 à 130 % ?
+
+La plage de tempo est limitée volontairement, par choix de qualité sonore et non par limite technique. Rubber Band accepte des rapports bien plus larges (les essais ont porté sur 40 à 160 %), mais en dehors de 65 à 130 % le son se dégrade de façon audible : attaques diluées, timbre « aqueux », surtout en ralentissant. Nous aurions pu aller au-delà ; nous avons préféré ne proposer que des réglages dont le son reste de bonne qualité. Les constantes se trouvent dans `index.html` (`TEMPO_MIN`, `TEMPO_MAX`, attribut `min`/`max` du curseur `#tempo`, position du repère `.mark100`).
+
+*Why 65–130 %?* The tempo range is limited on purpose, as a sound-quality choice rather than a technical limit. Rubber Band accepts much wider ratios (we tested 40–160 %), but outside 65–130 % the sound audibly degrades: smeared attacks, a "watery" timbre, especially when slowing down. We could have gone further; we preferred to offer only settings whose sound stays good.

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* Permet d'ouvrir l'outil sans connexion (salle de cours sans wifi). Les musiques sont déjà dans le navigateur. */
-const CACHE = 'musique-classe-v20';
+const CACHE = 'musique-classe-v22';
 const FILES = ['./', 'index.html', 'aide.html', 'mentions-legales.html', 'don.html', 'i18n.js', 'theme.js', 'stretch-processor.js', 'dsp-worker.js', 'vendor/rubberband.umd.min.js', 'vendor/rubberband.wasm', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'logo-emblem.png', 'apple-touch-icon.png', 'og-image.png'];
 
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
