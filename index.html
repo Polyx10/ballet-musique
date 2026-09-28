@@ -63,8 +63,7 @@
                  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; letter-spacing:0; box-shadow:0 8px 28px rgba(0,0,0,.28); }
   #donatePanel p { margin:0 0 12px; }
   #donatePanel a.go { display:inline-block; background:var(--accent); color:var(--accent-ink); font-weight:600; text-decoration:none; border-radius:12px; padding:10px 18px; }
-  #donateBtn .short { display:none; }
-  @media (max-width:640px) { #donateBtn .long { display:none; } #donateBtn .short { display:inline; } }
+  #donateBtn .orb { display:none; }
   section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
   h1 { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; font-weight:600; }
   button, label, input { touch-action:manipulation; }
@@ -113,8 +112,21 @@
   @media (display-mode: standalone) and (orientation: portrait) { @supports (-webkit-touch-callout: none) { .brand { padding-top:calc(env(safe-area-inset-top) + 40px); } } }
   .brand img { border-radius:10px; }
   /* Petits écrans : titre et logo plus compacts pour laisser la place au bouton « Don » */
-  @media (max-width:480px) { .brand { font-size:clamp(16px, 5.4vw, 22px); padding-left:12px; padding-right:12px; } .brand-in { justify-content:flex-start; gap:10px; } .brand-in > span { white-space:nowrap; } #donateBtn { padding:6px 11px; } }
-  @media (max-width:380px) { .brand img { width:36px; height:36px; } .brand-in { gap:8px; } }
+  /* Téléphone : titre centré et plus grand ; bouton de don en bulle ronde (cœur) avec « Don » en arc dessous */
+  @media (max-width:640px) {
+    .brand { font-size:clamp(16px, 5.9vw, 26px); padding-left:12px; padding-right:12px; }
+    .brand-in { justify-content:center; gap:10px; padding-right:60px; }
+    .brand-in > span { white-space:nowrap; }
+    #donateBtn, #donateBtn:hover, #donateBtn[aria-expanded="true"] { width:56px; height:48px; padding:0; border:none; border-radius:0; background:none; color:inherit; }
+    #donateBtn .pill { display:none; }
+    #donateBtn .orb { display:block; overflow:visible; }
+    .orb circle { fill:transparent; stroke:#C49E6D; stroke-width:1.6; }
+    .orb .orbheart { fill:#C49E6D; font-size:16px; font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
+    .orb .orbtxt { fill:#F7EEE0; font:600 11px -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; letter-spacing:.05em; }
+    #donateBtn:hover .orb circle, #donateBtn[aria-expanded="true"] .orb circle { fill:#C49E6D; }
+    #donateBtn:hover .orbheart, #donateBtn[aria-expanded="true"] .orbheart { fill:#1B2631; }
+  }
+  @media (max-width:380px) { .brand img { width:36px; height:36px; } .brand-in { gap:8px; padding-right:60px; } }
   main { padding-top:16px; }
   button.skip { padding:10px 11px; }
   select { font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:6px 8px; }
@@ -138,7 +150,7 @@
 <body>
 <div id="edge" aria-hidden="true"></div>
 <header class="brand"><div class="brand-in"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span>
-  <button id="donateBtn" type="button" aria-expanded="false" aria-controls="donatePanel" data-i18n-aria="support" data-i18n-title="support"><span class="long" data-i18n="donateLong">Soutenir le projet</span><span class="short" data-i18n="donateShort">Soutenir</span> <span class="heart" aria-hidden="true">♥</span></button>
+  <button id="donateBtn" type="button" aria-expanded="false" aria-controls="donatePanel" data-i18n-aria="support" data-i18n-title="support"><span class="pill"><span class="long" data-i18n="donateLong">Soutenir le projet</span> <span class="heart" aria-hidden="true">♥</span></span><svg class="orb" viewBox="0 0 56 48" width="56" height="48" aria-hidden="true"><circle cx="28" cy="18" r="16"/><text class="orbheart" x="28" y="18.5" text-anchor="middle" dominant-baseline="central">♥</text><path id="orbArc" d="M5.9 33.5 A27 27 0 0 0 50.1 33.5" fill="none"/><text class="orbtxt"><textPath href="#orbArc" startOffset="50%" text-anchor="middle" data-i18n="donateShort">Don</textPath></text></svg></button>
   <div id="donatePanel" role="dialog" aria-label="Soutenir le projet" data-i18n-aria="support" hidden>
     <p data-i18n="donateText"></p>
     <a class="go" href="don.html" data-i18n="donateGo">Faire un don</a>
@@ -232,7 +244,7 @@
   <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
     <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
   </div></div>
-  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v19</div>
+  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v20</div>
 </footer>
 
 <script src="i18n.js"></script>
