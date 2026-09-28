@@ -549,7 +549,13 @@
     if (!next) return;
     goTrack(next, true, true);
   };
-  $('repeat').onchange = () => engine.setRepeat($('repeat').checked);
+  // « Répéter ce morceau » est mémorisé sur l'appareil, même après fermeture de l'application.
+  try { if (localStorage.getItem('repeat') === '1') $('repeat').checked = true; } catch (err) {}
+  engine.setRepeat($('repeat').checked);
+  $('repeat').onchange = () => {
+    engine.setRepeat($('repeat').checked);
+    try { localStorage.setItem('repeat', $('repeat').checked ? '1' : '0'); } catch (err) {}
+  };
   // Passe à un autre morceau : avec le lecteur natif si l'écran est éteint (Android), sinon avec le moteur fin.
   function goTrack(t, play, noDelay) {
     if (engine.bg) {
