@@ -114,17 +114,18 @@
   /* Petits écrans : titre et logo plus compacts pour laisser la place au bouton « Don » */
   /* Téléphone : titre centré et plus grand ; bouton de don en bulle ronde (cœur) avec le texte droit dessous */
   @media (max-width:640px) {
-    .brand { font-size:clamp(16px, 5.9vw, 26px); padding-left:12px; padding-right:12px; }
-    .brand-in { justify-content:center; gap:10px; padding-right:74px; }
+    .brand { font-size:clamp(16px, 5.7vw, 26px); padding-left:12px; padding-right:12px; }
+    .brand-in { justify-content:center; gap:10px; padding-right:30px; }
     .brand-in > span { white-space:nowrap; }
     #donateBtn, #donateBtn:hover, #donateBtn[aria-expanded="true"] { padding:0; border:none; border-radius:0; background:none; color:inherit; }
+    #donateBtn { right:-4px; }
     #donateBtn .pill { display:none; }
-    #donateBtn .orb { display:flex; flex-direction:column; align-items:center; gap:3px; width:66px; }
-    .orbdot { width:34px; height:34px; box-sizing:border-box; border:1.6px solid #C49E6D; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#C49E6D; font-size:17px; line-height:1; }
-    .orblbl { color:#C49E6D; font:600 9px/1 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; letter-spacing:0; white-space:nowrap; }
+    #donateBtn .orb { display:flex; flex-direction:column; align-items:center; gap:2px; opacity:.85; }
+    .orbdot { width:28px; height:28px; box-sizing:border-box; border:1.4px solid #C49E6D; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#C49E6D; font-size:14px; line-height:1; }
+    .orblbl { color:#C49E6D; font:600 8px/1 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; letter-spacing:0; white-space:nowrap; }
     #donateBtn:hover .orbdot, #donateBtn[aria-expanded="true"] .orbdot { background:#C49E6D; color:#1B2631; }
   }
-  @media (max-width:380px) { .brand img { width:36px; height:36px; } .brand-in { gap:8px; padding-right:74px; } }
+  @media (max-width:380px) { .brand img { width:36px; height:36px; } .brand-in { gap:8px; padding-right:30px; } }
   main { padding-top:16px; }
   button.skip { padding:10px 11px; }
   select { font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:6px 8px; }
@@ -242,7 +243,7 @@
   <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
     <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
   </div></div>
-  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v22</div>
+  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v23</div>
 </footer>
 
 <script src="i18n.js"></script>
