@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<html lang="fr" data-title-key="legalTitle">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1B2631">
+<script src="theme.js"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Mentions légales — The Ballet Pianist</title>
+<style>
+  /* Palette du logo : crème #F7EEE0, bleu nuit #1B2631, or #C49E6D (contrastes vérifiés) */
+  :root {
+    --bg:#F7EEE0; --card:#FBF6EC; --ink:#1B2631; --muted:#675F50; --line:#E2D5BD;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#7A5A26; --ctl:#7A5A26; --soft:#EFE2C8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+  }
+  :root[data-theme="light"] { color-scheme:light; }
+  :root[data-theme="dark"] { color-scheme:dark; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
+  .wrap { max-width:720px; margin:0 auto; padding:16px;
+          padding-top:16px; padding-bottom:max(32px, env(safe-area-inset-bottom));
+          padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
+  .brand { display:flex; align-items:center; justify-content:center; gap:12px; background:#1B2631; color:#F7EEE0; border-bottom:2px solid #C49E6D;
+           font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em;
+           padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
+  .brand img { border-radius:10px; }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .seg button { border:none; border-radius:0; background:transparent; padding:6px 12px; font-size:14px; }
+  .seg button + button { border-left:1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); font-weight:600; }
+  footer .seg { margin-top:10px; }
+  .bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:15px; }
+  a, .linkbtn { color:var(--accent-text); }
+  .linkbtn { background:none; border:none; padding:0; font:inherit; text-decoration:underline; cursor:pointer; }
+  h1 { font-size:28px; line-height:1.2; margin:12px 0 8px; }
+  h2 { font-size:19px; margin:0 0 8px; }
+  p { margin:8px 0; }
+  .lead { color:var(--muted); font-size:17px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin:14px 0; }
+  ol, ul { margin:8px 0; padding-left:22px; }
+  li { margin:4px 0; }
+  code { background:var(--soft); border-radius:6px; padding:2px 6px; font-size:14px; overflow-wrap:anywhere; }
+  pre { background:var(--soft); border-radius:10px; padding:10px 12px; overflow:auto; font-size:13.5px; margin:8px 0; }
+  .note { border-left:3px solid var(--ctl); background:var(--soft); border-radius:0 10px 10px 0; padding:8px 12px; margin:10px 0; }
+  kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; padding:0 6px; font-size:13px; background:var(--bg); }
+  html[lang=fr] .en, html[lang=en] .fr { display:none; }
+  footer { color:var(--muted); font-size:14px; text-align:center; margin-top:20px; }
+</style>
+</head>
+<body>
+<header class="brand"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span></header>
+<div class="wrap">
+  <div class="bar">
+    <a href="./" data-i18n="backToApp">← Retour au lecteur</a>
+    <button id="lang" class="linkbtn" data-i18n="switchLang">English</button>
+  </div>
+
+  <!-- ===================== FRANÇAIS ===================== -->
+  <div class="fr">
+    <h1>Mentions légales</h1>
+    <p class="lead">Dernière mise à jour : 28 septembre 2026.</p>
+
+    <section>
+      <h2>Éditeur du site</h2>
+      <p><strong>The Ballet Pianist</strong> est développé et édité par <strong>Aymeric Guilluy-Eyraud</strong>, entrepreneur individuel (EI).</p>
+      <ul>
+        <li>SIREN : 914 929 526 · SIRET : 914 929 526 00020</li>
+        <li>Activité : programmation informatique (code APE / NAF 6201Z)</li>
+        <li>TVA non applicable, article 293 B du CGI</li>
+        <li>Contact : <a href="mailto:polyx10@tutanota.com">polyx10@tutanota.com</a></li>
+        <li>Développeur et directeur de la publication : Aymeric Guilluy-Eyraud</li>
+      </ul>
+      <p>Pour toute question, demande de retrait ou signalement, écrivez à l'adresse de contact ci-dessus : elle est lue régulièrement.</p>
+    </section>
+
+    <section>
+      <h2>Hébergeur</h2>
+      <p>Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis. Téléphone : +1 559 288 7060. Site : <a href="https://vercel.com">vercel.com</a>.</p>
+    </section>
+
+    <section>
+      <h2>Propriété intellectuelle</h2>
+      <ul>
+        <li>Le <strong>code</strong> du site est un logiciel libre, distribué sous licence <strong>GNU GPL version 2 ou ultérieure</strong>. Son code source est disponible sur <a href="https://github.com/Polyx10/ballet-musique">https://github.com/Polyx10/ballet-musique</a>, avec l'indication des composants tiers (notamment la bibliothèque Rubber Band, © Particular Programs Ltd t/a Breakfast Quay, licence GPL).</li>
+        <li>Le <strong>nom « The Ballet Pianist »</strong>, le <strong>logo</strong> et les icônes qui en sont dérivés sont la propriété de Aymeric Guilluy-Eyraud et ne sont <strong>pas couverts</strong> par la licence libre : tous droits réservés.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Musique et droits d'auteur</h2>
+      <p>L'outil ne fournit, n'héberge et ne transmet <strong>aucune musique</strong>. Les fichiers restent sur l'appareil de l'utilisateur, qui est seul responsable de disposer des droits nécessaires pour les fichiers qu'il utilise et pour toute diffusion qu'il en fait, notamment en cours.</p>
+    </section>
+
+    <section>
+      <h2>Données personnelles et cookies</h2>
+      <ul>
+        <li>Pas de compte, <strong>pas de cookies</strong>, pas de mesure d'audience, pas de publicité.</li>
+        <li>Vos musiques et vos réglages (volume, tempo, langue, thème…) sont enregistrés <strong>uniquement sur votre appareil</strong>, dans le stockage de votre navigateur, pour que l'outil fonctionne et se souvienne de vos choix. Ils ne sont jamais transmis à l'éditeur.</li>
+        <li>Comme tout hébergeur, Vercel peut enregistrer automatiquement des données techniques de connexion (adresse IP, date et heure, pages demandées) pour assurer le fonctionnement et la sécurité du service, selon <a href="https://vercel.com/legal/privacy-policy">sa politique de confidentialité</a>. Ces données sont traitées aux États-Unis.</li>
+        <li>Si un lien de don est proposé, il mène vers un service tiers, Ko-fi, qui traite les paiements sous sa propre responsabilité et selon <a href="https://more.ko-fi.com/privacy">sa politique de confidentialité</a>. L'éditeur ne reçoit ni ne conserve vos données bancaires.</li>
+        <li>Si vous écrivez à l'éditeur, votre message et votre adresse e-mail ne servent qu'à vous répondre. Vous pouvez demander l'accès, la rectification ou la suppression de vos données à l'adresse ci-dessus, et adresser une réclamation à la <a href="https://www.cnil.fr">CNIL</a>.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Dons</h2>
+      <p>L'outil est et reste gratuit. Des dons pourront être proposés ; ils sont volontaires, d'un montant libre, et ne donnent droit à <strong>aucune contrepartie</strong>, ni à un reçu fiscal ou à une réduction d'impôt.</p>
+    </section>
+
+    <section>
+      <h2>Responsabilité</h2>
+      <p>L'outil est fourni « en l'état », sans garantie de disponibilité ni d'absence d'erreur. Les musiques importées sont copiées dans le stockage du navigateur, que l'appareil ou l'utilisateur peut effacer : conservez vos fichiers d'origine.</p>
+    </section>
+
+    <section>
+      <h2>Droit applicable</h2>
+      <p>Le site est soumis au droit français.</p>
+    </section>
+  </div>
+
+  <!-- ===================== ENGLISH ===================== -->
+  <div class="en">
+    <h1>Legal notice</h1>
+    <p class="lead">Last updated: 28 September 2026. This notice is written under French law; the French version prevails.</p>
+
+    <section>
+      <h2>Publisher</h2>
+      <p><strong>The Ballet Pianist</strong> is developed and published by <strong>Aymeric Guilluy-Eyraud</strong>, sole proprietor (EI, France).</p>
+      <ul>
+        <li>SIREN: 914 929 526 · SIRET: 914 929 526 00020</li>
+        <li>Activity: computer programming (APE / NAF code 6201Z)</li>
+        <li>VAT not applicable, article 293 B of the French General Tax Code</li>
+        <li>Contact: <a href="mailto:polyx10@tutanota.com">polyx10@tutanota.com</a></li>
+        <li>Developer and publication director: Aymeric Guilluy-Eyraud</li>
+      </ul>
+      <p>For any question, removal request or report, write to the address above: it is read regularly.</p>
+    </section>
+
+    <section>
+      <h2>Host</h2>
+      <p>Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, United States. Phone: +1 559 288 7060. Website: <a href="https://vercel.com">vercel.com</a>.</p>
+    </section>
+
+    <section>
+      <h2>Intellectual property</h2>
+      <ul>
+        <li>The site's <strong>code</strong> is free software, distributed under the <strong>GNU GPL version 2 or later</strong>. Its source code is available at <a href="https://github.com/Polyx10/ballet-musique">https://github.com/Polyx10/ballet-musique</a>, together with a list of third-party components (notably the Rubber Band library, © Particular Programs Ltd t/a Breakfast Quay, GPL license).</li>
+        <li>The <strong>name “The Ballet Pianist”</strong>, the <strong>logo</strong> and the icons derived from it belong to Aymeric Guilluy-Eyraud and are <strong>not covered</strong> by the free license: all rights reserved.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Music and copyright</h2>
+      <p>The tool does not provide, host or transmit <strong>any music</strong>. Files stay on the user's device, and the user alone is responsible for holding the rights needed for the files they use and for any broadcasting of them, including in class.</p>
+    </section>
+
+    <section>
+      <h2>Personal data and cookies</h2>
+      <ul>
+        <li>No account, <strong>no cookies</strong>, no audience measurement, no advertising.</li>
+        <li>Your music and settings (volume, tempo, language, theme…) are stored <strong>only on your device</strong>, in your browser's storage, so that the tool works and remembers your choices. They are never sent to the publisher.</li>
+        <li>Like any host, Vercel may automatically log technical connection data (IP address, date and time, pages requested) to run and secure the service, under <a href="https://vercel.com/legal/privacy-policy">its privacy policy</a>. This data is processed in the United States.</li>
+        <li>If a donation link is offered, it leads to a third-party service, Ko-fi, which processes payments under its own responsibility and <a href="https://more.ko-fi.com/privacy">privacy policy</a>. The publisher neither receives nor keeps your payment details.</li>
+        <li>If you write to the publisher, your message and e-mail address are used only to reply. You may request access, correction or deletion of your data at the address above, and lodge a complaint with the French data protection authority, the <a href="https://www.cnil.fr">CNIL</a>.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Donations</h2>
+      <p>The tool is and remains free. Donations may be offered; they are voluntary, of any amount, and give <strong>nothing in return</strong>, nor a tax receipt or tax reduction.</p>
+    </section>
+
+    <section>
+      <h2>Liability</h2>
+      <p>The tool is provided “as is”, with no guarantee of availability or of being error-free. Imported music is copied into the browser's storage, which the device or the user may erase: keep your original files.</p>
+    </section>
+
+    <section>
+      <h2>Governing law</h2>
+      <p>This site is governed by French law.</p>
+    </section>
+  </div>
+
+  <footer><a href="./" data-i18n="backToApp">← Retour au lecteur</a>
+    <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
+      <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
+    </div></div>
+  </footer>
+</div>
+<script src="i18n.js"></script>
+<script>document.getElementById('lang').onclick = () => I18N.toggle();</script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /* Lecteur : joue les paquets de son préparés par dsp-worker.js (étirement Rubber Band hors du fil audio).
    Ce fichier ne fait aucun calcul lourd : il ne fait que recopier le son prêt, avec un fondu à la pause. */
 

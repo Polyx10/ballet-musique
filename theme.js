@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /* Thème : Auto (suit l'appareil), Clair ou Sombre. Le choix est mémorisé sur l'appareil.
    Chargé dans le <head> pour appliquer le thème avant l'affichage (pas de flash). */
 (() => {

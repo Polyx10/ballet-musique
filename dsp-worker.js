@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /* Calcul de l'étirement (Rubber Band) hors du fil audio.
    Il produit le son quelques dixièmes de seconde à l'avance et l'envoie au lecteur (stretch-processor.js),
    ce qui absorbe les à-coups de calcul : plus de craquements même sur un appareil moins rapide. */
