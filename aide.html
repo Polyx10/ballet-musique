@@ -108,15 +108,21 @@
     <section>
       <h2>Ajouter vos musiques</h2>
       <ul>
-        <li><strong>Formats lus</strong> : MP3, M4A / AAC, WAV, FLAC, Ogg.</li>
+        <li><strong>Formats lus</strong> : MP3, M4A / AAC, WAV (16, 24 ou 32 bits, jusqu'à 96 kHz et plus), FLAC, Ogg.</li>
         <li><strong>Ordinateur</strong> : « Ajouter un dossier… » importe tout un dossier d'un coup, ou glissez-déposez fichiers et dossiers dans la page.</li>
         <li><strong>iPhone / iPad</strong> : <strong>« Ajouter un dossier » ne fonctionne pas</strong> (l'iPhone ne permet pas de choisir un dossier ; le bouton est d'ailleurs masqué). Faites plutôt : « Ajouter des fichiers… », ouvrez le dossier voulu dans l'app Fichiers, touchez <strong>« Sélectionner »</strong> en haut à droite, puis <strong>« Tout sélectionner »</strong>, enfin <strong>« Ouvrir »</strong>. Répétez pour chaque dossier. Les fichiers stockés sur iCloud sont téléchargés à ce moment-là.</li>
         <li><strong>Android</strong> : utilisez « Ajouter des fichiers… », qui permet de choisir plusieurs morceaux à la fois ; l'import d'un dossier entier n'est pas fiable sur téléphone.</li>
         <li>Les fichiers d'origine ne sont jamais modifiés : l'outil en garde une copie dans le navigateur.</li>
       </ul>
-      <div class="note"><strong>Fichiers WMA</strong> (anciens fichiers Windows) : aucun navigateur ne sait les lire. Convertissez-les d'abord en MP3, par exemple avec le logiciel libre ffmpeg :
+      <div class="note"><strong>Fichiers WMA</strong> (anciens fichiers Windows) : aucun navigateur ne sait les lire. Convertissez-les d'abord en MP3 (sans perte audible par rapport au WMA), par exemple avec le logiciel libre ffmpeg :
 <pre>ffmpeg -i morceau.wma -c:a libmp3lame -q:a 2 morceau.mp3</pre>
         Les fichiers protégés par des droits numériques (DRM), comme certains achats iTunes anciens, ne peuvent pas être lus.</div>
+      <div class="note"><strong>Quel format pour le meilleur son ?</strong> Le format ne fait pas la qualité : c'est la <em>source</em> qui la fixe. Un fichier WAV ou FLAC (sans perte) ne sonne mieux qu'un MP3 que s'il vient d'une source de qualité, comme un CD ou un enregistrement de studio. Convertir un MP3, un WMA ou un AAC en WAV ne redonne rien de ce qui a été perdu : le fichier est simplement 8 à 10 fois plus gros.
+        <ul>
+          <li>Si vous avez le choix, partez d'une source <strong>sans perte</strong> (CD copié en WAV ou en FLAC) : c'est la meilleure qualité.</li>
+          <li>À défaut, un MP3 en <strong>320 kbit/s</strong> ou un AAC en 256 kbit/s est largement suffisant. Évitez de convertir plusieurs fois un même fichier.</li>
+          <li><strong>Place occupée</strong> (par minute de musique) : environ 10 Mo en WAV, 5 à 7 Mo en FLAC, 1 à 2 Mo en MP3. Sur téléphone, une grosse bibliothèque en WAV peut saturer le stockage du navigateur.</li>
+        </ul></div>
       <p><strong>Firefox</strong> : au premier import, une fenêtre propose d'<strong>autoriser le stockage permanent</strong>. Acceptez : sinon Firefox peut effacer vos musiques quand l'espace disque manque.</p>
     </section>
 
@@ -125,6 +131,7 @@
       <ul>
         <li>De 40 % à 160 % de la vitesse d'origine. La hauteur du son ne change pas.</li>
         <li>« Tempo d'origine » revient à 100 %.</li>
+        <li>Le repère fixe sur le curseur marque <strong>100 %</strong>, la vitesse d'origine : il permet de voir d'un coup d'œil où revenir.</li>
         <li>Après un changement, comptez environ un tiers de seconde avant de l'entendre.</li>
         <li>Les durées affichées sont celles que vous écoutez réellement, au tempo choisi.</li>
         <li>Au-delà de ±20 à 30 %, un instrument seul comme le piano peut sonner légèrement différent : c'est propre à tous les logiciels de ce type.</li>
@@ -223,15 +230,21 @@
     <section>
       <h2>Adding your music</h2>
       <ul>
-        <li><strong>Formats</strong>: MP3, M4A / AAC, WAV, FLAC, Ogg.</li>
+        <li><strong>Formats</strong>: MP3, M4A / AAC, WAV (16, 24 or 32-bit, up to 96 kHz and beyond), FLAC, Ogg.</li>
         <li><strong>Computer</strong>: “Add a folder…” imports a whole folder at once, or drag and drop files and folders onto the page.</li>
         <li><strong>iPhone / iPad</strong>: <strong>“Add a folder” does not work</strong> (iPhones cannot pick a folder, so the button is hidden). Do this instead: “Add files…”, open the folder in the Files app, tap <strong>“Select”</strong> at the top right, then <strong>“Select All”</strong>, then <strong>“Open”</strong>. Repeat for each folder. Files stored in iCloud are downloaded at that moment.</li>
         <li><strong>Android</strong>: use “Add files…”, which lets you pick several tracks at once; importing a whole folder is not reliable on phones.</li>
         <li>Your original files are never modified: the tool keeps a copy inside the browser.</li>
       </ul>
-      <div class="note"><strong>WMA files</strong> (old Windows format): no web browser can play them. Convert them to MP3 first, for example with the free tool ffmpeg:
+      <div class="note"><strong>WMA files</strong> (old Windows format): no web browser can play them. Convert them to MP3 first (no audible loss compared with the WMA), for example with the free tool ffmpeg:
 <pre>ffmpeg -i track.wma -c:a libmp3lame -q:a 2 track.mp3</pre>
         Files protected by DRM, such as some old iTunes purchases, cannot be played.</div>
+      <div class="note"><strong>Which format sounds best?</strong> The format does not set the quality: the <em>source</em> does. A WAV or FLAC file (lossless) only sounds better than an MP3 if it comes from a quality source, such as a CD or a studio recording. Converting an MP3, WMA or AAC to WAV does not bring back anything that was lost: the file is simply 8 to 10 times bigger.
+        <ul>
+          <li>If you have the choice, start from a <strong>lossless</strong> source (a CD ripped to WAV or FLAC): that is the best quality.</li>
+          <li>Otherwise, a <strong>320 kbps</strong> MP3 or a 256 kbps AAC is plenty. Avoid converting the same file several times.</li>
+          <li><strong>Space used</strong> (per minute of music): about 10 MB as WAV, 5 to 7 MB as FLAC, 1 to 2 MB as MP3. On a phone, a large WAV library can fill the browser's storage.</li>
+        </ul></div>
       <p><strong>Firefox</strong>: on your first import, a prompt asks you to <strong>allow persistent storage</strong>. Accept it: otherwise Firefox may erase your music when disk space runs low.</p>
     </section>
 
@@ -240,6 +253,7 @@
       <ul>
         <li>From 40 % to 160 % of the original speed. The pitch does not change.</li>
         <li>“Original tempo” goes back to 100 %.</li>
+        <li>The fixed mark on the slider shows <strong>100 %</strong>, the original speed: it lets you see at a glance where to go back to.</li>
         <li>After a change, allow about a third of a second before you hear it.</li>
         <li>The times shown are what you actually hear, at the chosen tempo.</li>
         <li>Beyond ±20 to 30 %, a solo instrument such as a piano may sound slightly different: this is true of all software of this kind.</li>
