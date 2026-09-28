@@ -34,6 +34,8 @@
   .wrap { max-width:720px; margin:0 auto; padding:16px;
           padding-top:16px; padding-bottom:max(32px, env(safe-area-inset-bottom));
           padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
+  /* iPhone, appli installée : iOS 26 pose un flou sur le haut de la page, sauf si un bloc fixe et opaque couvre le bord haut. Ce bandeau (hauteur = zone de la barre d'état, donc 0 ailleurs) évite le flou sur le logo et le titre. */
+  #edge { position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#1B2631; z-index:50; pointer-events:none; }
   .brand { display:flex; align-items:center; justify-content:center; gap:12px; background:#1B2631; color:#F7EEE0; border-bottom:2px solid #C49E6D;
            font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em;
            padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
@@ -62,6 +64,7 @@
 </style>
 </head>
 <body>
+<div id="edge" aria-hidden="true"></div>
 <header class="brand"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span></header>
 <div class="wrap">
   <div class="bar">

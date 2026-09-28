@@ -102,6 +102,8 @@
   li .t { font-size:12px; color:var(--muted); white-space:nowrap; }
   li .x { padding:4px 8px; font-size:13px; color:var(--muted); background:none; border:none; }
   .empty { color:var(--muted); padding:12px 0; text-align:center; }
+  /* iPhone, appli installée : iOS 26 pose un flou sur le haut de la page, sauf si un bloc fixe et opaque couvre le bord haut. Ce bandeau (hauteur = zone de la barre d'état, donc 0 ailleurs) évite le flou sur le logo et le titre. */
+  #edge { position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#1B2631; z-index:50; pointer-events:none; }
   .brand { display:flex; align-items:center; justify-content:center; gap:12px; background:#1B2631; color:#F7EEE0; border-bottom:2px solid #C49E6D;
            font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em;
            padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
@@ -125,6 +127,7 @@
 </style>
 </head>
 <body>
+<div id="edge" aria-hidden="true"></div>
 <header class="brand"><div class="brand-in"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span>
   <button id="donateBtn" type="button" aria-expanded="false" aria-controls="donatePanel" data-i18n-aria="support" data-i18n-title="support"><span class="long" data-i18n="donateLong">Soutenir le projet</span><span class="short" data-i18n="donateShort">Soutenir</span> <span class="heart" aria-hidden="true">♥</span></button>
   <div id="donatePanel" role="dialog" aria-label="Soutenir le projet" data-i18n-aria="support" hidden>
@@ -349,11 +352,13 @@
     renderList();
   }
 
+  let importing = false;
   async function importFiles(fileList) {
     const files = [...fileList].filter(f => f.type.startsWith('audio/') || AUDIO_EXT.test(f.name));
     if (!files.length) { $('status').textContent = T('noAudio'); return; }
     const known = new Set(tracks.map(t => t.name + '|' + t.size));
     let added = 0, skipped = 0;
+    importing = true;
     for (const f of files) {
       const name = cleanName(f.name);
       if (known.has(name + '|' + f.size)) { skipped++; continue; }
@@ -366,6 +371,7 @@
         break;
       }
     }
+    importing = false;
     if (added && navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
     await reload();
     $('status').textContent = T('added', { n: added }) + (skipped ? T('skipped', { n: skipped }) : '') + '.'
@@ -759,7 +765,13 @@
     else if (e.key === 'ArrowRight') { e.preventDefault(); $('fwd').click(); }
   });
 
-  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    // Nouvelle version : la page se recharge toute seule au premier lancement (plus besoin d'ouvrir l'appli deux fois),
+    // sauf si un morceau est en cours de lecture ou un import en cours : dans ce cas elle attend le lancement suivant.
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !engine.playing && !importing) location.reload(); });
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
   // Écran éteint / page en arrière-plan : le navigateur ralentit la page, on prépare donc le son plus à l'avance.
   const isAndroid = () => /Android/i.test(navigator.userAgent) || window.__forceBg;
   function enterBg(play) {
