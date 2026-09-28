@@ -5,7 +5,7 @@
 Copyright (C) 2026 Aymeric Guilluy-Eyraud
 
 Le code de The Ballet Pianist (fichiers `index.html`, `aide.html`, `i18n.js`, `theme.js`, `dsp-worker.js`,
-`stretch-processor.js`, `sw.js`, `manifest.webmanifest`, `vercel.json`) est un logiciel libre, distribué selon les
+`stretch-processor.js`, `sw.js`, `manifest.webmanifest`) est un logiciel libre, distribué selon les
 termes de la **GNU General Public License, version 2 ou (à votre choix) toute version ultérieure**
 (`GPL-2.0-or-later`). Voir le fichier [`LICENSE`](LICENSE).
 

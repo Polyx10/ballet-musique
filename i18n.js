@@ -3,7 +3,7 @@
 (() => {
   const D = {
     fr: {
-      appTitle: 'The Ballet Pianist', helpTitle: "Mode d'emploi — The Ballet Pianist", legalTitle: 'Mentions légales — The Ballet Pianist', supportTitle: 'Soutenir — The Ballet Pianist', support: 'Soutenir le projet', legal: 'Mentions légales', backToApp: '← Retour au lecteur',
+      appTitle: 'The Ballet Pianist', homeTitle: 'The Ballet Pianist — lecteur de musique de cours de danse, tempo réglable', helpTitle: "Mode d'emploi — The Ballet Pianist", legalTitle: 'Mentions légales — The Ballet Pianist', supportTitle: 'Soutenir — The Ballet Pianist', support: 'Soutenir le projet', legal: 'Mentions légales', backToApp: '← Retour au lecteur',
       player: 'Lecture', pick: 'Choisis un morceau',
       back: 'Reculer de 5 s', fwd: 'Avancer de 5 s', playPause: 'Lecture / pause', position: 'Position',
       volume: 'Volume', clarity: 'Clarté', qualityReset: 'Qualité audio réinitialisée sur cet appareil.', resetQuality: 'Réinitialiser la qualité audio sur cet appareil', tempo: 'Tempo', reset: "Tempo d'origine (100 %)",
@@ -29,7 +29,7 @@
       lite: "Mode économique : l'appareil ne suit pas le rythme, le son est un peu moins raffiné.",
     },
     en: {
-      appTitle: 'The Ballet Pianist', helpTitle: 'How to use — The Ballet Pianist', legalTitle: 'Legal notice — The Ballet Pianist', supportTitle: 'Support — The Ballet Pianist', support: 'Support the project', legal: 'Legal notice', backToApp: '← Back to the player',
+      appTitle: 'The Ballet Pianist', homeTitle: 'The Ballet Pianist — ballet class music player with live tempo control', helpTitle: 'How to use — The Ballet Pianist', legalTitle: 'Legal notice — The Ballet Pianist', supportTitle: 'Support — The Ballet Pianist', support: 'Support the project', legal: 'Legal notice', backToApp: '← Back to the player',
       player: 'Player', pick: 'Pick a track',
       back: 'Back 5 s', fwd: 'Forward 5 s', playPause: 'Play / pause', position: 'Position',
       volume: 'Volume', clarity: 'Clarity', qualityReset: 'Audio quality reset on this device.', resetQuality: 'Reset audio quality on this device', tempo: 'Tempo', reset: 'Original tempo (100 %)',
