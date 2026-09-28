@@ -113,8 +113,8 @@
   @media (display-mode: standalone) and (orientation: portrait) { @supports (-webkit-touch-callout: none) { .brand { padding-top:calc(env(safe-area-inset-top) + 40px); } } }
   .brand img { border-radius:10px; }
   /* Petits écrans : titre et logo plus compacts pour laisser la place au bouton « Don » */
-  @media (max-width:480px) { .brand { font-size:18px; } .brand-in { padding-right:84px; gap:8px; } .brand-in > span { white-space:nowrap; } #donateBtn { padding:6px 11px; } }
-  @media (max-width:380px) { .brand { font-size:16px; } .brand-in { padding-right:94px; } .brand img { width:36px; height:36px; } }
+  @media (max-width:480px) { .brand { font-size:clamp(16px, 5.4vw, 22px); padding-left:12px; padding-right:12px; } .brand-in { justify-content:flex-start; gap:10px; } .brand-in > span { white-space:nowrap; } #donateBtn { padding:6px 11px; } }
+  @media (max-width:380px) { .brand img { width:36px; height:36px; } .brand-in { gap:8px; } }
   main { padding-top:16px; }
   button.skip { padding:10px 11px; }
   select { font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:6px 8px; }
@@ -232,7 +232,7 @@
   <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
     <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
   </div></div>
-  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v18</div>
+  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v19</div>
 </footer>
 
 <script src="i18n.js"></script>
