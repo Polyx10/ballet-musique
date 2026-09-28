@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<html lang="fr" data-title-key="supportTitle">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1B2631">
+<script src="theme.js"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Soutenir — The Ballet Pianist</title>
+<style>
+  /* Palette du logo : crème #F7EEE0, bleu nuit #1B2631, or #C49E6D (contrastes vérifiés) */
+  :root {
+    --bg:#F7EEE0; --card:#FBF6EC; --ink:#1B2631; --muted:#675F50; --line:#E2D5BD;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#7A5A26; --ctl:#7A5A26; --soft:#EFE2C8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+  }
+  :root[data-theme="light"] { color-scheme:light; }
+  :root[data-theme="dark"] { color-scheme:dark; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
+  .wrap { max-width:720px; margin:0 auto; padding:16px;
+          padding-top:16px; padding-bottom:max(32px, env(safe-area-inset-bottom));
+          padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
+  .brand { display:flex; align-items:center; justify-content:center; gap:12px; background:#1B2631; color:#F7EEE0; border-bottom:2px solid #C49E6D;
+           font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em;
+           padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
+  .brand img { border-radius:10px; }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .seg button { border:none; border-radius:0; background:transparent; padding:6px 12px; font-size:14px; }
+  .seg button + button { border-left:1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); font-weight:600; }
+  footer .seg { margin-top:10px; }
+  .bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:15px; }
+  a, .linkbtn { color:var(--accent-text); }
+  .linkbtn { background:none; border:none; padding:0; font:inherit; text-decoration:underline; cursor:pointer; }
+  h1 { font-size:28px; line-height:1.2; margin:12px 0 8px; }
+  h2 { font-size:19px; margin:0 0 8px; }
+  p { margin:8px 0; }
+  .lead { color:var(--muted); font-size:17px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin:14px 0; }
+  ol, ul { margin:8px 0; padding-left:22px; }
+  li { margin:4px 0; }
+  code { background:var(--soft); border-radius:6px; padding:2px 6px; font-size:14px; overflow-wrap:anywhere; }
+  pre { background:var(--soft); border-radius:10px; padding:10px 12px; overflow:auto; font-size:13.5px; margin:8px 0; }
+  .note { border-left:3px solid var(--ctl); background:var(--soft); border-radius:0 10px 10px 0; padding:8px 12px; margin:10px 0; }
+  kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; padding:0 6px; font-size:13px; background:var(--bg); }
+  html[lang=fr] .en, html[lang=en] .fr { display:none; }
+  .donate { display:inline-block; background:var(--accent); color:var(--accent-ink); border:1px solid var(--ctl); border-radius:12px; padding:12px 20px; font-weight:600; text-decoration:none; }
+  footer { color:var(--muted); font-size:14px; text-align:center; margin-top:20px; }
+</style>
+</head>
+<body>
+<header class="brand"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span></header>
+<div class="wrap">
+  <div class="bar">
+    <a href="./" data-i18n="backToApp">← Retour au lecteur</a>
+    <button id="lang" class="linkbtn" data-i18n="switchLang">English</button>
+  </div>
+
+  <!-- ===================== FRANÇAIS ===================== -->
+  <div class="fr">
+    <h1>Soutenir The Ballet Pianist</h1>
+    <p class="lead">L'outil est gratuit, sans publicité, sans compte et sans collecte de données. Si vous l'utilisez en cours et qu'il vous est utile, vous pouvez aider à le faire vivre.</p>
+
+    <section>
+      <h2>À quoi servent les dons</h2>
+      <ul>
+        <li>Le nom de domaine et l'hébergement.</li>
+        <li>Le temps de développement, les corrections et les nouvelles fonctions.</li>
+        <li>Les essais sur différents appareils et navigateurs.</li>
+      </ul>
+      <p>The Ballet Pianist reste <strong>entièrement gratuit et complet</strong>, avec ou sans don. Aucune fonction n'est réservée aux donateurs.</p>
+    </section>
+
+    <section>
+      <h2>Faire un don</h2>
+      <p><a class="donate" href="https://ko-fi.com/theballetpianist" target="_blank" rel="noopener">Faire un don sur Ko-fi</a></p>
+      <p>Le paiement est géré par <strong>Ko-fi</strong> (par carte ou par PayPal). Le montant est libre, ponctuel, sans engagement. Je ne vois ni ne conserve votre numéro de carte. En revanche, selon le moyen de paiement, Ko-fi, PayPal ou Stripe me transmettent votre nom et votre adresse e-mail, et votre message si vous en laissez un : ces informations ne servent qu'à vous remercier et à tenir ma comptabilité, et sont conservées le temps qu'exigent les obligations comptables.</p>
+      <div class="note">Un don est volontaire et <strong>ne donne droit à aucune contrepartie</strong>, ni à un reçu fiscal ou à une réduction d'impôt.</div>
+    </section>
+
+    <p style="text-align:center"><a href="mentions-legales.html">Mentions légales et confidentialité</a></p>
+  </div>
+
+  <!-- ===================== ENGLISH ===================== -->
+  <div class="en">
+    <h1>Support The Ballet Pianist</h1>
+    <p class="lead">The tool is free, with no ads, no account and no data collection. If you use it in class and find it useful, you can help keep it going.</p>
+
+    <section>
+      <h2>What donations pay for</h2>
+      <ul>
+        <li>The domain name and hosting.</li>
+        <li>Development time, fixes and new features.</li>
+        <li>Testing on different devices and browsers.</li>
+      </ul>
+      <p>The Ballet Pianist stays <strong>completely free and complete</strong>, with or without a donation. No feature is reserved for donors.</p>
+    </section>
+
+    <section>
+      <h2>Make a donation</h2>
+      <p><a class="donate" href="https://ko-fi.com/theballetpianist" target="_blank" rel="noopener">Donate on Ko-fi</a></p>
+      <p>Payment is handled by <strong>Ko-fi</strong> (by card or PayPal). The amount is up to you, one-off, with no commitment. I neither see nor keep your card number. However, depending on the payment method, Ko-fi, PayPal or Stripe pass me your name and e-mail address, and your message if you leave one: this information is used only to thank you and to keep my accounts, and is kept for as long as accounting obligations require.</p>
+      <div class="note">A donation is voluntary and <strong>gives nothing in return</strong>, nor a tax receipt or tax reduction.</div>
+    </section>
+
+    <p style="text-align:center"><a href="mentions-legales.html">Legal notice and privacy</a></p>
+  </div>
+
+  <footer><a href="./" data-i18n="backToApp">← Retour au lecteur</a>
+    <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
+      <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
+    </div></div>
+  </footer>
+</div>
+<script src="i18n.js"></script>
+<script>document.getElementById('lang').onclick = () => I18N.toggle();</script>
+</body>
+</html>
