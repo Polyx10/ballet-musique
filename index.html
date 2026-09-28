@@ -48,10 +48,12 @@
   * { box-sizing:border-box; }
   [hidden] { display:none !important; }
   body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.4 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
-  main { max-width:960px; margin:0 auto; padding:16px; display:grid; gap:16px;
+  main { max-width:680px; margin:0 auto; padding:16px; display:grid; gap:16px;
          padding-top:16px; padding-bottom:max(16px, env(safe-area-inset-bottom));
          padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
-  @media (min-width:800px){ main{ grid-template-columns: 1fr 1fr; align-items:start; } .span2{ grid-column:1 / -1; } }
+  .donate { text-align:center; }
+  .donate p { margin:0 0 10px; color:var(--muted); }
+  .donate a.btn { display:inline-block; background:var(--accent); color:var(--accent-ink); font-weight:600; text-decoration:none; border-radius:12px; padding:10px 18px; }
   section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
   h1 { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; font-weight:600; }
   button, label, input { touch-action:manipulation; }
@@ -178,6 +180,11 @@
     <div class="hint" id="lite"></div>
     <div class="hint"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a></div>
     <div class="hint" data-i18n="shortcuts">Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s</div>
+  </section>
+
+  <section id="donate" class="donate">
+    <p data-i18n="donateText"></p>
+    <a class="btn" href="don.html" data-i18n="donateBtn">Soutenir le projet ♥</a>
   </section>
 
   <section id="searchbar" class="span2">

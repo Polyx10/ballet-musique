@@ -50,6 +50,9 @@
   h2 { font-size:19px; margin:0 0 8px; }
   p { margin:8px 0; }
   .lead { color:var(--muted); font-size:17px; }
+  .donate { text-align:center; }
+  .donate p { margin:0 0 10px; color:var(--muted); }
+  .donate a.btn { display:inline-block; background:var(--accent); color:var(--accent-ink); font-weight:600; text-decoration:none; border-radius:12px; padding:10px 18px; }
   section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin:14px 0; }
   ol, ul { margin:8px 0; padding-left:22px; }
   li { margin:4px 0; }
@@ -340,6 +343,11 @@
       <p>Developed by Aymeric Guilluy-Eyraud. The source code is free (GPL license): <a href="https://github.com/Polyx10/ballet-musique">github.com/Polyx10/ballet-musique</a>.</p>
     </section>
   </div>
+
+  <section class="donate">
+    <p data-i18n="donateText"></p>
+    <a class="btn" href="don.html" data-i18n="donateBtn">Soutenir le projet ♥</a>
+  </section>
 
   <footer><a href="./" data-i18n="backToApp">← Retour au lecteur</a>
     <div style="margin-top:6px"><a href="don.html" data-i18n="support">Soutenir le projet</a> · <a href="mentions-legales.html" data-i18n="legal">Mentions légales</a></div>
