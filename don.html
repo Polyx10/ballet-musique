@@ -39,6 +39,8 @@
   .brand { display:flex; align-items:center; justify-content:center; gap:12px; background:#1B2631; color:#F7EEE0; border-bottom:2px solid #C49E6D;
            font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em;
            padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
+  /* iPhone, appli installée (portrait) : le flou d'iOS 26 déborde d'environ 40 pt sous la barre d'état ; on descend le contenu du bandeau pour qu'il reste net. */
+  @media (display-mode: standalone) and (orientation: portrait) { @supports (-webkit-touch-callout: none) { .brand { padding-top:calc(env(safe-area-inset-top) + 40px); } } }
   .brand img { border-radius:10px; }
   .seg { display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
   .seg button { border:none; border-radius:0; background:transparent; padding:6px 12px; font-size:14px; }

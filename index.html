@@ -107,6 +107,8 @@
   .brand { display:flex; align-items:center; justify-content:center; gap:12px; background:#1B2631; color:#F7EEE0; border-bottom:2px solid #C49E6D;
            font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em;
            padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
+  /* iPhone, appli installée (portrait) : le flou d'iOS 26 déborde d'environ 40 pt sous la barre d'état ; on descend le contenu du bandeau pour qu'il reste net. */
+  @media (display-mode: standalone) and (orientation: portrait) { @supports (-webkit-touch-callout: none) { .brand { padding-top:calc(env(safe-area-inset-top) + 40px); } } }
   .brand img { border-radius:10px; }
   main { padding-top:16px; }
   button.skip { padding:10px 11px; }
@@ -121,6 +123,7 @@
   .seg button + button { border-left:1px solid var(--line); }
   .seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); font-weight:600; }
   .foot .seg { margin-top:10px; }
+  .foot .ver { margin-top:10px; font-size:12px; opacity:.6; }
   label.file { display:inline-block; }
   label.file input { display:none; }
   label.file span { display:inline-block; font:inherit; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; }
@@ -231,6 +234,7 @@
   <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
     <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
   </div></div>
+  <div class="ver">v15</div>
 </footer>
 
 <script src="i18n.js"></script>
