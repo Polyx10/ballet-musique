@@ -558,6 +558,9 @@
     if (!next) return;
     goTrack(next, true, true);
   };
+  // « Enchaîner avec le morceau suivant » est mémorisé sur l'appareil (coché par défaut).
+  try { const s = localStorage.getItem('auto'); if (s === '0') $('auto').checked = false; else if (s === '1') $('auto').checked = true; } catch (err) {}
+  $('auto').onchange = () => { try { localStorage.setItem('auto', $('auto').checked ? '1' : '0'); } catch (err) {} };
   // « Répéter ce morceau » est mémorisé sur l'appareil, même après fermeture de l'application.
   try { if (localStorage.getItem('repeat') === '1') $('repeat').checked = true; } catch (err) {}
   engine.setRepeat($('repeat').checked);
