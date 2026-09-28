@@ -75,10 +75,15 @@
   button:active { transform:scale(.97); }
   button.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--ctl); }
   .title { font-size:22px; font-weight:600; min-height:1.4em; margin-bottom:12px; overflow-wrap:anywhere; }
+  .title:empty { display:none; }
   .row { display:flex; align-items:center; gap:10px; }
   .row.wrap { flex-wrap:wrap; }
+  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
   .time { font-variant-numeric:tabular-nums; color:var(--muted); font-size:14px; min-width:44px; }
   input[type=range] { width:100%; accent-color:var(--ctl); }
+  .duo { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:10px; }
+  .ctl input { display:block; margin:2px 0 0; }
+  .ctlhead { display:flex; justify-content:space-between; align-items:baseline; color:var(--muted); font-size:14px; font-variant-numeric:tabular-nums; }
   .play { width:72px; height:72px; border-radius:50%; font-size:28px; padding:0; }
   .tempo { text-align:center; margin:18px 0 6px; }
   .tempo output { font-size:56px; font-weight:700; font-variant-numeric:tabular-nums; }
@@ -87,10 +92,9 @@
   .mark100 { position:absolute; left:50%; top:50%; width:3px; height:22px; margin-top:-11px; margin-left:-1.5px; background:var(--ink); opacity:.55; border-radius:2px; z-index:0; }
   .mark100lbl { position:absolute; left:50%; bottom:0; transform:translateX(-50%); font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; }
   .tempo small { font-size:20px; color:var(--muted); }
-  .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }
-  .steps button { font-size:18px; padding:14px 0; }
   .hint { color:var(--muted); font-size:13px; margin-top:10px; }
   .hint a { color:var(--accent-text); }
+  @media (hover:none) { #player .hint[data-i18n="shortcuts"] { display:none; } }
   #drop { border:2px dashed var(--line); border-radius:12px; padding:16px; text-align:center; color:var(--muted); margin-bottom:12px; }
   #drop.over { border-color:var(--ctl); background:var(--soft); }
   #searchbar { padding:12px 16px; }
@@ -123,7 +127,8 @@
   .seg button + button { border-left:1px solid var(--line); }
   .seg button[aria-pressed="true"] { background:var(--accent); color:var(--accent-ink); font-weight:600; }
   .foot .seg { margin-top:10px; }
-  .foot .ver { margin-top:10px; font-size:12px; opacity:.6; }
+  .foot .ver { margin-top:10px; font-size:12px; }
+  .foot .ver a { font-size:13px; }
   label.file { display:inline-block; }
   label.file input { display:none; }
   label.file span { display:inline-block; font:inherit; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; }
@@ -140,8 +145,8 @@
 </div></header>
 <main>
   <section id="player">
-    <h1 data-i18n="player">Lecture</h1>
-    <div class="title" id="title">Choisis un morceau</div>
+    <h1 class="sr" data-i18n="player">Lecture</h1>
+    <div class="title" id="title"></div>
     <div class="row">
       <span class="time" id="cur">0:00</span>
       <input type="range" id="seek" min="0" max="1000" value="0" data-i18n-aria="position" aria-label="Position">
@@ -162,15 +167,15 @@
         </select></label>
     </div>
     <div class="hint" id="cd" hidden style="text-align:center; font-size:15px; color:var(--ink)"></div>
-    <div class="row" style="margin-top:12px">
-      <span class="time" style="min-width:auto" data-i18n="volume">Volume</span>
-      <input type="range" id="vol" min="0" max="100" step="1" value="100" data-i18n-aria="volume" aria-label="Volume">
-      <output id="volOut" class="time" style="min-width:44px;text-align:right">100 %</output>
-    </div>
-    <div class="row" style="margin-top:10px">
-      <span class="time" style="min-width:auto" data-i18n="clarity">Clarté</span>
-      <input type="range" id="clarity" min="0" max="100" step="5" value="0" data-i18n-aria="clarity" aria-label="Clarté">
-      <output id="clarityOut" class="time" style="min-width:44px;text-align:right">0 %</output>
+    <div class="duo">
+      <div class="ctl">
+        <div class="ctlhead"><span data-i18n="volume">Volume</span><output id="volOut">100 %</output></div>
+        <input type="range" id="vol" min="0" max="100" step="1" value="100" data-i18n-aria="volume" aria-label="Volume">
+      </div>
+      <div class="ctl">
+        <div class="ctlhead"><span data-i18n="clarity">Clarté</span><output id="clarityOut">0 %</output></div>
+        <input type="range" id="clarity" min="0" max="100" step="5" value="0" data-i18n-aria="clarity" aria-label="Clarté">
+      </div>
     </div>
 
     <div class="tempo"><output id="tempoOut">100</output><small> %</small></div>
@@ -179,15 +184,8 @@
       <input type="range" id="tempo" min="40" max="160" step="1" value="100" data-i18n-aria="tempo" aria-label="Tempo">
       <span class="mark100lbl" aria-hidden="true">100</span>
     </div>
-    <div class="steps">
-      <button data-d="-5">−5</button><button data-d="-1">−1</button>
-      <button data-d="1">+1</button><button data-d="5">+5</button>
-    </div>
-    <div class="row wrap" style="margin-top:10px">
-      <button id="reset" data-i18n="reset">Tempo d'origine (100 %)</button>
-    </div>
 
-    <div class="row" style="margin-top:12px">
+    <div class="row" style="margin-top:8px">
       <label><input type="checkbox" id="auto" checked> <span data-i18n="auto">Enchaîner avec le morceau suivant</span></label>
     </div>
     <div class="row" style="margin-top:8px">
@@ -203,7 +201,6 @@
       <div class="row wrap" style="margin-top:8px"><a href="aide.html#ecran-eteint" data-i18n="learnMore"></a><button id="bgNoticeOk" data-i18n="gotIt"></button></div>
     </div>
     <div class="hint" id="lite"></div>
-    <div class="hint"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a></div>
     <div class="hint" data-i18n="shortcuts">Raccourcis : espace = lecture · ↑ ↓ = tempo ±1 % · ← → = ±5 s</div>
   </section>
 
@@ -234,14 +231,14 @@
   <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
     <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
   </div></div>
-  <div class="ver">v15</div>
+  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v17</div>
 </footer>
 
 <script src="i18n.js"></script>
 <script>
 (() => {
   const T = (k, v) => I18N.t(k, v);
-  const showPick = () => { $('title').textContent = T('pick'); };
+  const showPick = () => { $('title').textContent = ''; };
   const $ = id => document.getElementById(id);
   const AUDIO_EXT = /\.(mp3|m4a|aac|wav|flac|aif|aiff|ogg|opus)$/i;
 
@@ -733,8 +730,6 @@
     }
   }
   $('tempo').oninput = e => applyTempo(+e.target.value);
-  $('reset').onclick = () => applyTempo(100);
-  document.querySelectorAll('.steps button').forEach(b => b.onclick = () => applyTempo((+$('tempo').value) + (+b.dataset.d)));
 
   /* ---------- Volume (mémorisé sur cet appareil) ---------- */
   let vol = 100;
