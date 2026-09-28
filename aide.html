@@ -117,14 +117,27 @@
       <div class="note"><strong>Fichiers WMA</strong> (anciens fichiers Windows) : aucun navigateur ne sait les lire. Convertissez-les d'abord en MP3 (sans perte audible par rapport au WMA), par exemple avec le logiciel libre ffmpeg :
 <pre>ffmpeg -i morceau.wma -c:a libmp3lame -q:a 2 morceau.mp3</pre>
         Les fichiers protégés par des droits numériques (DRM), comme certains achats iTunes anciens, ne peuvent pas être lus.</div>
-      <div class="note"><strong>Quel format pour le meilleur son ?</strong> Le format ne fait pas la qualité : c'est la <em>source</em> qui la fixe. Un fichier WAV ou FLAC (sans perte) ne sonne mieux qu'un MP3 que s'il vient d'une source de qualité, comme un CD ou un enregistrement de studio. Convertir un MP3, un WMA ou un AAC en WAV ne redonne rien de ce qui a été perdu : le fichier est simplement 8 à 10 fois plus gros.
-        <ul>
-          <li>Si vous avez le choix, partez d'une source <strong>sans perte</strong> (CD copié en WAV ou en FLAC) : c'est la meilleure qualité.</li>
-          <li>À défaut, un MP3 en <strong>320 kbit/s</strong> ou un AAC en 256 kbit/s est largement suffisant. Évitez de convertir plusieurs fois un même fichier.</li>
-          <li><strong>Place occupée</strong> (par minute de musique) : environ 10 Mo en WAV, 5 à 7 Mo en FLAC, 1 à 2 Mo en MP3. Sur téléphone, une grosse bibliothèque en WAV peut saturer le stockage du navigateur.</li>
-        </ul></div>
+      <div class="note"><strong>Qualité des fichiers :</strong> selon leur format d'origine, le son peut être très différent. Voir la section <a href="#qualite">« La qualité de vos fichiers »</a> ci-dessous.</div>
       <p><strong>Firefox</strong> : au premier import, une fenêtre propose d'<strong>autoriser le stockage permanent</strong>. Acceptez : sinon Firefox peut effacer vos musiques quand l'espace disque manque.</p>
     </section>
+
+    <section id="qualite">
+      <h2>La qualité de vos fichiers</h2>
+      <p>Les musiques de cours circulent souvent d'un professeur à l'autre, avec des qualités très variables. L'outil joue fidèlement ce que contient le fichier : il ne peut pas rendre ce qui a été perdu à l'enregistrement ou à la compression. Du plus fidèle au moins fidèle :</p>
+      <ol>
+        <li><strong>FLAC</strong> (ou WAV) : sans perte, la meilleure qualité. <strong>Le FLAC est à privilégier</strong> : même qualité que le WAV, deux fois plus léger, et il garde les informations du morceau (titre, album).</li>
+        <li><strong>AAC 256 kbit/s</strong> (fichiers <code>.m4a</code>, achats iTunes) ou <strong>MP3 320 kbit/s</strong> : très proches du sans perte pour la plupart des oreilles, et largement suffisants pour un cours.</li>
+        <li><strong>128 kbit/s ou moins</strong> (anciens MP3, WMA…) : la qualité la plus limitée, avec des aigus plus ternes. Les défauts s'entendent surtout sur un piano seul, et peuvent ressortir davantage quand on ralentit le morceau.</li>
+      </ol>
+      <p><strong>Connaître la qualité d'un fichier.</strong> Dans l'app Musique du Mac : clic droit sur le morceau, « Lire les informations », onglet « Fichier » (type et débit). Sous Windows : clic droit sur le fichier, « Propriétés », onglet « Détails » (débit binaire). Repère rapide par la taille, pour une minute de musique : environ 1 Mo = 128 kbit/s, 2 Mo = 256 kbit/s, 2,4 Mo = 320 kbit/s, 5 à 7 Mo = FLAC.</p>
+      <ul>
+        <li>Convertir un fichier de 128 kbit/s en 320 kbit/s, en WAV ou en FLAC <strong>n'améliore rien</strong> : il devient plus gros, pas meilleur. C'est la source qui compte.</li>
+        <li>Quand on vous transmet une musique, demandez si possible la version de meilleure qualité, ou copiez vos propres CD en FLAC.</li>
+        <li>Évitez de convertir plusieurs fois un même fichier avec perte : chaque conversion ajoute une dégradation.</li>
+        <li><strong>Place occupée</strong> par minute de musique : environ 10 Mo en WAV, 5 à 7 Mo en FLAC, 1 à 2 Mo en MP3 ou AAC. Sur téléphone, une grosse bibliothèque en WAV peut saturer le stockage du navigateur.</li>
+      </ul>
+    </section>
+
 
     <section>
       <h2>Régler le tempo</h2>
@@ -239,14 +252,27 @@
       <div class="note"><strong>WMA files</strong> (old Windows format): no web browser can play them. Convert them to MP3 first (no audible loss compared with the WMA), for example with the free tool ffmpeg:
 <pre>ffmpeg -i track.wma -c:a libmp3lame -q:a 2 track.mp3</pre>
         Files protected by DRM, such as some old iTunes purchases, cannot be played.</div>
-      <div class="note"><strong>Which format sounds best?</strong> The format does not set the quality: the <em>source</em> does. A WAV or FLAC file (lossless) only sounds better than an MP3 if it comes from a quality source, such as a CD or a studio recording. Converting an MP3, WMA or AAC to WAV does not bring back anything that was lost: the file is simply 8 to 10 times bigger.
-        <ul>
-          <li>If you have the choice, start from a <strong>lossless</strong> source (a CD ripped to WAV or FLAC): that is the best quality.</li>
-          <li>Otherwise, a <strong>320 kbps</strong> MP3 or a 256 kbps AAC is plenty. Avoid converting the same file several times.</li>
-          <li><strong>Space used</strong> (per minute of music): about 10 MB as WAV, 5 to 7 MB as FLAC, 1 to 2 MB as MP3. On a phone, a large WAV library can fill the browser's storage.</li>
-        </ul></div>
+      <div class="note"><strong>File quality:</strong> depending on their original format, files can sound very different. See the <a href="#quality">“Your file quality”</a> section below.</div>
       <p><strong>Firefox</strong>: on your first import, a prompt asks you to <strong>allow persistent storage</strong>. Accept it: otherwise Firefox may erase your music when disk space runs low.</p>
     </section>
+
+    <section id="quality">
+      <h2>Your file quality</h2>
+      <p>Class music is often passed from one teacher to another, in very varied qualities. The tool plays faithfully what the file contains: it cannot bring back what was lost when recording or compressing. From most to least faithful:</p>
+      <ol>
+        <li><strong>FLAC</strong> (or WAV): lossless, the best quality. <strong>FLAC is preferable</strong>: same quality as WAV, half the size, and it keeps the track information (title, album).</li>
+        <li><strong>AAC 256 kbps</strong> (<code>.m4a</code> files, iTunes purchases) or <strong>MP3 320 kbps</strong>: very close to lossless for most ears, and plenty for a class.</li>
+        <li><strong>128 kbps or less</strong> (old MP3s, WMA…): the most limited quality, with duller high frequencies. The flaws show mostly on a solo piano, and may stand out more when the track is slowed down.</li>
+      </ol>
+      <p><strong>Checking a file's quality.</strong> In the Mac's Music app: right-click the track, “Get Info”, “File” tab (type and bit rate). On Windows: right-click the file, “Properties”, “Details” tab (bit rate). A quick guide by size, per minute of music: about 1 MB = 128 kbps, 2 MB = 256 kbps, 2.4 MB = 320 kbps, 5 to 7 MB = FLAC.</p>
+      <ul>
+        <li>Converting a 128 kbps file to 320 kbps, WAV or FLAC <strong>improves nothing</strong>: it just gets bigger, not better. The source is what counts.</li>
+        <li>When someone sends you a piece of music, ask for the best-quality version if you can, or rip your own CDs to FLAC.</li>
+        <li>Avoid converting the same file several times with loss: each conversion adds degradation.</li>
+        <li><strong>Space used</strong> per minute of music: about 10 MB as WAV, 5 to 7 MB as FLAC, 1 to 2 MB as MP3 or AAC. On a phone, a large WAV library can fill the browser's storage.</li>
+      </ul>
+    </section>
+
 
     <section>
       <h2>Setting the tempo</h2>
