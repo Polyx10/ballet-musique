@@ -248,7 +248,7 @@
   <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
     <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
   </div></div>
-  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v25</div>
+  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v26</div>
 </footer>
 
 <script src="i18n.js"></script>
@@ -333,7 +333,9 @@
         await reload();
       };
       li.append(cb, n, tp, x);
-      li.onclick = () => load(t, true);
+      // Retoucher le morceau déjà sélectionné bascule lecture/pause (pas besoin de remonter vers le lecteur) ;
+      // toucher un autre morceau le charge et le lance comme avant.
+      li.onclick = () => { current && current.id === t.id ? toggle() : load(t, true); };
       ul.appendChild(li);
     }
     updateBulk(shown);
