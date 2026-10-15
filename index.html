@@ -14,19 +14,24 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <title>The Ballet Pianist — lecteur de musique de cours de danse, tempo réglable</title>
-<meta name="description" content="Free web player for ballet class music: change the tempo live (65–130 %) without changing the pitch. Lecteur gratuit de musique de cours de danse : tempo réglable en direct, sans changer la hauteur du son.">
+<meta name="description" content="Lecteur de musique gratuit pour cours de danse : changez le tempo en direct (65–130 %) sans changer la hauteur du son. Vos musiques restent sur votre appareil.">
 <link rel="canonical" href="https://www.theballetpianist.com/">
+<link rel="alternate" hreflang="fr" href="https://www.theballetpianist.com/">
+<link rel="alternate" hreflang="en" href="https://www.theballetpianist.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://www.theballetpianist.com/en/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Ballet Pianist">
-<meta property="og:title" content="The Ballet Pianist — ballet class music at your tempo">
-<meta property="og:description" content="Free player for ballet class music: change the tempo live without changing the pitch. Works in your browser, on phone and computer.">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="The Ballet Pianist — la musique de vos cours de danse, à votre tempo">
+<meta property="og:description" content="Lecteur gratuit pour cours de danse : changez le tempo en direct sans changer la hauteur du son. Dans le navigateur, sur téléphone comme sur ordinateur.">
 <meta property="og:url" content="https://www.theballetpianist.com/">
 <meta property="og:image" content="https://www.theballetpianist.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Ballet Pianist logo: a ballerina dancing over a piano keyboard">
+<meta property="og:image:alt" content="Logo The Ballet Pianist : une danseuse sur un clavier de piano">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"The Ballet Pianist","url":"https://www.theballetpianist.com/","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","inLanguage":["fr","en"],"description":"Free player for ballet class music with live tempo control (65–130 %) and pitch preserved.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Person","name":"Aymeric Guilluy-Eyraud"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"The Ballet Pianist","url":"https://www.theballetpianist.com/","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","inLanguage":["fr","en"],"description":"Lecteur de musique gratuit pour cours de danse, avec réglage du tempo en direct (65–130 %) sans changer la hauteur du son.","isAccessibleForFree":true,"sameAs":["https://github.com/Polyx10/ballet-musique"],"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Person","name":"Aymeric Guilluy-Eyraud"}}</script>
 <style>
   /* Palette du logo : crème #F7EEE0, bleu nuit #1B2631, or #C49E6D (contrastes vérifiés) */
   :root {
@@ -65,7 +70,8 @@
   #donatePanel a.go { display:inline-block; background:var(--accent); color:var(--accent-ink); font-weight:600; text-decoration:none; border-radius:12px; padding:10px 18px; }
   #donateBtn .orb { display:none; }
   section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
-  h1 { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; font-weight:600; }
+  section > h2 { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; font-weight:600; }
+  .brand .brand-title { font:inherit; letter-spacing:inherit; text-transform:none; color:inherit; margin:0; }
   button, label, input { touch-action:manipulation; }
   body { -webkit-tap-highlight-color:transparent; }
   button { font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 14px; cursor:pointer; }
@@ -94,6 +100,11 @@
   .tempo small { font-size:20px; color:var(--muted); }
   .hint { color:var(--muted); font-size:13px; margin-top:10px; }
   .hint a { color:var(--accent-text); }
+  .about > h2 { font-size:18px; letter-spacing:0; text-transform:none; color:var(--ink); margin:0 0 8px; }
+  .about p { margin:8px 0; color:var(--ink); }
+  .about ul { list-style:disc; margin:8px 0; padding:0 0 0 20px; max-height:none; overflow:visible; }
+  .about li { display:list-item; padding:0; margin:4px 0; border:0; border-radius:0; cursor:auto; }
+  .about .hint { margin-top:12px; }
   @media (hover:none) { #player .hint[data-i18n="shortcuts"] { display:none; } }
   #drop { border:2px dashed var(--line); border-radius:12px; padding:16px; text-align:center; color:var(--muted); margin-bottom:12px; }
   #drop.over { border-color:var(--ctl); background:var(--soft); }
@@ -121,7 +132,7 @@
     /* trois zones : logo au bord gauche, titre centré sur la page, bouton de don au bord droit */
     .brand-in { justify-content:center; gap:0; padding:0; min-height:52px; }
     .brand img { position:absolute; left:0; top:50%; transform:translateY(-50%); width:52px; height:52px; }
-    .brand-in > span { white-space:nowrap; }
+    .brand-in > .brand-title { white-space:nowrap; }
     #donateBtn, #donateBtn:hover, #donateBtn[aria-expanded="true"] { padding:0; border:none; border-radius:0; background:none; color:inherit; }
     #donateBtn { right:-4px; }
     #donateBtn .pill { display:none; }
@@ -153,7 +164,7 @@
 </head>
 <body>
 <div id="edge" aria-hidden="true"></div>
-<header class="brand"><div class="brand-in"><img src="logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span>
+<header class="brand"><div class="brand-in"><img src="logo-emblem.png" alt="" width="44" height="44"><h1 class="brand-title">The Ballet Pianist</h1>
   <button id="donateBtn" type="button" aria-expanded="false" aria-controls="donatePanel" data-i18n-aria="support" data-i18n-title="support"><span class="pill"><span class="long" data-i18n="donateLong">Soutenir le projet</span> <span class="heart" aria-hidden="true">♥</span></span><span class="orb"><span class="orbdot" aria-hidden="true">♥</span><span class="orblbl" data-i18n="donateShort">Nous soutenir</span></span></button>
   <div id="donatePanel" role="dialog" aria-label="Soutenir le projet" data-i18n-aria="support" hidden>
     <p data-i18n="donateText"></p>
@@ -162,7 +173,7 @@
 </div></header>
 <main>
   <section id="player">
-    <h1 class="sr" data-i18n="player">Lecture</h1>
+    <h2 class="sr" data-i18n="player">Lecture</h2>
     <div class="title" id="title"></div>
     <div class="row">
       <span class="time" id="cur">0:00</span>
@@ -226,7 +237,7 @@
   </section>
 
   <section id="lib">
-    <h1 data-i18n="library">Bibliothèque</h1>
+    <h2 data-i18n="library">Bibliothèque</h2>
     <div id="drop" data-i18n="drop">Glisse ici des fichiers ou un dossier de musique</div>
     <div class="row wrap" style="margin-bottom:10px">
       <label class="file"><span data-i18n="addFiles">Ajouter des fichiers…</span><input type="file" id="files" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.aif,.aiff" multiple></label>
@@ -239,6 +250,17 @@
     <ul id="list"></ul>
     <div class="hint" id="status"></div>
   </section>
+  <section id="about" class="about">
+    <h2 data-i18n="aboutTitle">Le lecteur de musique des cours de danse</h2>
+    <p data-i18n="aboutLead">The Ballet Pianist joue vos propres musiques de cours et vous laisse changer le tempo en direct, de 65 % à 130 % de la vitesse d'origine, sans changer la hauteur du son. Pratique pour adapter un adage, un tendu ou un allegro au niveau de la classe, sans arrêter la musique.</p>
+    <ul>
+      <li data-i18n="aboutLi1">Gratuit et libre (open source), sans publicité ni compte.</li>
+      <li data-i18n="aboutLi2">Vos musiques restent sur votre appareil : elles sont copiées dans votre navigateur et jamais envoyées sur Internet.</li>
+      <li data-i18n="aboutLi3">Sur ordinateur, tablette et téléphone, directement dans le navigateur ; installable comme une application sur l'écran d'accueil.</li>
+      <li data-i18n="aboutLi4">Enchaînement des morceaux, répétition, départ différé, réglage du volume et de la clarté.</li>
+    </ul>
+    <p class="hint"><a href="aide.html" data-i18n="help">Mode d'emploi</a> · <a href="en/" hreflang="en" lang="en">English version</a></p>
+  </section>
 </main>
 <footer class="foot">
   <button id="lang" class="linkbtn" data-i18n="switchLang">English</button> ·
@@ -248,7 +270,7 @@
   <div><div class="seg" role="group" data-i18n-aria="themeLabel" aria-label="Thème">
     <button data-theme-btn="auto" data-i18n="themeAuto">Auto</button><button data-theme-btn="light" data-i18n="themeLight">Clair</button><button data-theme-btn="dark" data-i18n="themeDark">Sombre</button>
   </div></div>
-  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v27</div>
+  <div class="ver"><a href="#" id="resetQuality" data-i18n="resetQuality">Réinitialiser la qualité audio sur cet appareil</a><br>v28</div>
 </footer>
 
 <script src="i18n.js"></script>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<!-- Page d'entrée anglaise (référencement). Le lecteur lui-même est l'application à la racine (/), qui s'affiche en
+     anglais selon la langue du navigateur ou le paramètre ?lang=en. Cette page est statique : si une caractéristique
+     change (plage de tempo, formats, etc.), mettre aussi à jour index.html, aide.html et README.md. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1B2631">
+<script src="/theme.js"></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<title>The Ballet Pianist — free ballet class music player with live tempo control</title>
+<meta name="description" content="Free ballet class music player: change the tempo live (65–130 %) without changing the pitch. Play your own music in the browser, on phone or computer.">
+<link rel="canonical" href="https://www.theballetpianist.com/en/">
+<link rel="alternate" hreflang="en" href="https://www.theballetpianist.com/en/">
+<link rel="alternate" hreflang="fr" href="https://www.theballetpianist.com/">
+<link rel="alternate" hreflang="x-default" href="https://www.theballetpianist.com/en/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Ballet Pianist">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:title" content="The Ballet Pianist — ballet class music at your tempo">
+<meta property="og:description" content="Free player for ballet class music: change the tempo live without changing the pitch. Works in your browser, on phone and computer.">
+<meta property="og:url" content="https://www.theballetpianist.com/en/">
+<meta property="og:image" content="https://www.theballetpianist.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Ballet Pianist logo: a ballerina dancing over a piano keyboard">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"The Ballet Pianist","url":"https://www.theballetpianist.com/en/","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","inLanguage":"en","description":"Free ballet class music player with live tempo control (65–130 %) and pitch preserved. Your music stays on your device.","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"featureList":["Live tempo change from 65 % to 130 % without changing the pitch","Plays your own MP3, M4A, WAV, FLAC and Ogg files","Your music stays on your device and is never uploaded","Installable on iPhone, iPad, Android and computers","Continuous play, repeat and start delay"],"author":{"@type":"Person","name":"Aymeric Guilluy-Eyraud"},"sameAs":["https://github.com/Polyx10/ballet-musique"]}</script>
+<style>
+  /* Palette du logo : crème #F7EEE0, bleu nuit #1B2631, or #C49E6D (contrastes vérifiés) */
+  :root {
+    --bg:#F7EEE0; --card:#FBF6EC; --ink:#1B2631; --muted:#675F50; --line:#E2D5BD;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#7A5A26; --ctl:#7A5A26; --soft:#EFE2C8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#111921; --card:#1B2631; --ink:#F7EEE0; --muted:#A7A99F; --line:#2D3A47;
+    --accent:#C49E6D; --accent-ink:#1B2631; --accent-text:#D8B885; --ctl:#C49E6D; --soft:#26323F;
+  }
+  :root[data-theme="light"] { color-scheme:light; }
+  :root[data-theme="dark"] { color-scheme:dark; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif; }
+  .wrap { max-width:720px; margin:0 auto; padding:16px;
+          padding-bottom:max(32px, env(safe-area-inset-bottom));
+          padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); }
+  /* iPhone, installed app: a fixed opaque strip over the status-bar area keeps iOS 26 from blurring the header. */
+  #edge { position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top); background:#1B2631; z-index:50; pointer-events:none; }
+  .brand { display:flex; align-items:center; justify-content:center; background:#1B2631; color:#F7EEE0; border-bottom:2px solid #C49E6D;
+           font:600 22px/1.2 Georgia,'Times New Roman',serif; letter-spacing:.02em;
+           padding:max(12px, env(safe-area-inset-top)) 16px 12px; }
+  @media (display-mode: standalone) and (orientation: portrait) { @supports (-webkit-touch-callout: none) { .brand { padding-top:calc(env(safe-area-inset-top) + 40px); } } }
+  .brand a { display:flex; align-items:center; gap:12px; color:inherit; text-decoration:none; }
+  .brand img { border-radius:10px; }
+  a { color:var(--accent-text); }
+  h1 { font:600 30px/1.2 Georgia,'Times New Roman',serif; margin:18px 0 8px; }
+  h2 { font-size:19px; margin:0 0 8px; }
+  h3 { font-size:16px; margin:14px 0 2px; }
+  p { margin:8px 0; }
+  .lead { color:var(--muted); font-size:18px; }
+  .cta { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 6px; }
+  .btn { display:inline-block; background:var(--accent); color:var(--accent-ink); font-weight:600; text-decoration:none; border-radius:12px; padding:12px 20px; }
+  .btn.alt { background:transparent; color:var(--accent-text); border:1px solid var(--line); }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin:14px 0; }
+  ol, ul { margin:8px 0; padding-left:22px; }
+  li { margin:5px 0; }
+  .note { border-left:3px solid var(--ctl); background:var(--soft); border-radius:0 10px 10px 0; padding:8px 12px; margin:10px 0; }
+  footer { color:var(--muted); font-size:14px; text-align:center; margin-top:20px; }
+  footer a { white-space:nowrap; }
+</style>
+</head>
+<body>
+<div id="edge" aria-hidden="true"></div>
+<header class="brand"><a href="/en/"><img src="/logo-emblem.png" alt="" width="44" height="44"><span>The Ballet Pianist</span></a></header>
+
+<main class="wrap">
+  <h1>Ballet class music, at your tempo</h1>
+  <p class="lead">The Ballet Pianist is a free music player for dance classes. Play your own tracks and slow them down or speed them up <strong>live</strong>, from 65&nbsp;% to 130&nbsp;%, without changing the pitch.</p>
+  <p class="cta"><a class="btn" id="open" href="/?lang=en">Open the player</a> <a class="btn alt" href="/aide.html?lang=en">User guide</a></p>
+
+  <section>
+    <h2>What it does</h2>
+    <ul>
+      <li><strong>Live tempo change</strong> from 65&nbsp;% to 130&nbsp;% of the original speed, while the music plays, with the pitch unchanged. The time-stretching runs in real time in your browser, using the <a href="https://breakfastquay.com/rubberband/">Rubber Band</a> library.</li>
+      <li><strong>Your own music</strong>: MP3, M4A / AAC, WAV, FLAC and Ogg files. Add files, or a whole folder on a computer.</li>
+      <li><strong>A library in your browser</strong>: search, continuous play, repeat, and a start delay (3 to 30 seconds) so you can get into position before the music starts.</li>
+      <li><strong>Volume and clarity</strong>: a treble tone control to make the sound rounder or brighter, depending on the speakers.</li>
+      <li><strong>On every device</strong>: phones, tablets and computers, right in the browser. It can be installed like an app, works offline after your first visits, and on Android it keeps playing with the screen off.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Getting started</h2>
+    <ol>
+      <li><a href="/?lang=en">Open the player</a> and add your music with “Add files…”.</li>
+      <li>Tap a track in the library: it starts playing. Tap it again to pause.</li>
+      <li>Set the tempo with the big slider. You hear the change right away.</li>
+    </ol>
+    <p>The tempo is remembered for each track, so next time it starts at the same speed.</p>
+  </section>
+
+  <section>
+    <h2>Install it like an app</h2>
+    <ul>
+      <li><strong>iPhone / iPad (Safari)</strong>: tap Share, then “Add to Home Screen”.</li>
+      <li><strong>Android (Chrome)</strong>: tap the ⋮ menu, then “Install app” or “Add to Home screen”.</li>
+      <li><strong>Mac (Safari)</strong>: File menu, then “Add to Dock”.</li>
+      <li><strong>Chrome or Edge (computer)</strong>: use the “Install” icon on the right of the address bar.</li>
+    </ul>
+    <p>The <a href="/aide.html?lang=en">user guide</a> has the detailed steps.</p>
+  </section>
+
+  <section>
+    <h2>Why 65 % to 130 %?</h2>
+    <p>The range is a <strong>quality choice</strong>, not a technical limit. Time-stretching can go further, but beyond this range the sound clearly degrades. We preferred to offer only settings that sound good.</p>
+  </section>
+
+  <section>
+    <h2>Frequently asked questions</h2>
+    <h3>Is it really free?</h3>
+    <p>Yes. The Ballet Pianist is free and open source (GPL), with no ads. If it is useful to you, a voluntary donation is possible, but it is never required.</p>
+    <h3>Do I need an account, and is my music uploaded?</h3>
+    <p>There is no account and no cookies. Your music never leaves your device: it is copied into your browser's own storage, and nothing is sent over the Internet.</p>
+    <h3>Does changing the tempo change the pitch?</h3>
+    <p>No, the pitch is preserved. Beyond about ±20 to 30&nbsp;%, a solo instrument such as a piano may sound slightly different: this is true of all software of this kind.</p>
+    <h3>Which devices and browsers work?</h3>
+    <p>Safari, Chrome, Firefox and Edge on computers, Safari on iPhone and iPad, and Chrome on Android.</p>
+    <h3>Can I use WMA files?</h3>
+    <p>No web browser can play WMA, so convert those files to MP3 first. Files protected by DRM cannot be played either. The <a href="/aide.html?lang=en">user guide</a> explains how.</p>
+  </section>
+
+  <section>
+    <h2>Support the project</h2>
+    <p>If The Ballet Pianist helps your classes, you can <a href="/don.html?lang=en">support the project</a> with a voluntary donation. Everyone gives what they wish, or nothing at all.</p>
+  </section>
+
+  <footer>
+    <a href="/?lang=en" id="open2">Open the player</a> ·
+    <a href="/aide.html?lang=en">User guide</a> ·
+    <a href="/don.html?lang=en">Support the project</a> ·
+    <a href="mailto:contact@theballetpianist.com">Contact us</a> ·
+    <a href="/mentions-legales.html?lang=en">Legal notice</a> ·
+    <a href="https://github.com/Polyx10/ballet-musique">Source code</a> ·
+    <a href="/" hreflang="fr" lang="fr" id="fr">Français</a>
+    <p>Developed by Aymeric Guilluy-Eyraud.</p>
+  </footer>
+</main>
+<script>
+  // Quand on ouvre le lecteur depuis cette page, on mémorise l'anglais pour que l'application s'affiche aussi en anglais.
+  function remember(lang) { try { localStorage.setItem('lang', lang); } catch (e) {} }
+  ['open', 'open2'].forEach(function (id) { var a = document.getElementById(id); if (a) a.addEventListener('click', function () { remember('en'); }); });
+  var fr = document.getElementById('fr'); if (fr) fr.addEventListener('click', function () { remember('fr'); });
+</script>
+</body>
+</html>

@@ -39,3 +39,11 @@ La plage de tempo est limitée volontairement, par choix de qualité sonore et n
 *Why 65–130 %?* The tempo range is limited on purpose, as a sound-quality choice rather than a technical limit. Rubber Band accepts much wider ratios (we tested 40–160 %), but outside 65–130 % the sound audibly degrades: smeared attacks, a "watery" timbre, especially when slowing down. We could have gone further; we preferred to offer only settings whose sound stays good.
 
 **Clarté / Clarity** : de −50 % (son plus rond) à +65 % (son plus clair), soit environ −6,5 dB à +8,5 dB (filtre en plateau à 2,8 kHz, 0,13 dB par %). Même logique que le tempo : la plage est un choix de qualité, pas une limite technique. / From −50 % (rounder) to +65 % (clearer), about −6.5 dB to +8.5 dB (high-shelf at 2.8 kHz, 0.13 dB per %). Same idea as the tempo: the range is a quality choice, not a technical limit.
+
+## Référencement (SEO)
+
+- `/` (`index.html`) : l'application, en français pour les moteurs de recherche (titre, description, Open Graph, bloc « À propos » visible). L'interface s'affiche dans la langue du navigateur.
+- `/en/` (`en/index.html`) : page d'entrée anglaise **statique**, qui renvoie vers l'application (`/?lang=en`). Les deux pages se déclarent mutuellement avec `hreflang` (`fr`, `en`, `x-default` → `/en/`).
+- `robots.txt` et `sitemap.xml` à la racine. `mentions-legales.html` est volontairement en `noindex`.
+- **À tenir synchronisé** quand une caractéristique change (plage de tempo, formats, etc.) : `index.html` (description, Open Graph, JSON-LD, bloc `#about` via `i18n.js`), `en/index.html`, `aide.html` et ce fichier.
+
